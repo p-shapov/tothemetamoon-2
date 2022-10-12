@@ -1,8 +1,17 @@
 $container-max-width: 1920px;
-$container-paddings-desktop: 40px;
-$container-paddings-tablet: 30px;
+$container-paddings-desktop: 35px;
+$container-paddings-tablet: 25px;
 $container-paddings-mobile: 20px;
 
 $screen-desktop: 1200px;
 $screen-tablet: 900px;
 $screen-mobile: 500px;
+
+$fg-primary: #fff;
+$fg-secondary: #000;
+$bg-primary: #000;
+$bg-secondary: #fff;
+$accent: #d7b7ff;
+$green: #6cff47;
+$violet: #9747ff;
+$error: #dc143c;

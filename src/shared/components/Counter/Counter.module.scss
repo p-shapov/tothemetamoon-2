@@ -1,0 +1,26 @@
+.root {
+  display: grid;
+
+  grid-template-columns: repeat(3, max-content);
+
+  column-gap: 10px;
+
+  align-items: center;
+
+  color: $fg-primary;
+}
+
+.control {
+  display: grid;
+
+  width: 24px;
+  height: 14px;
+
+  cursor: pointer;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 29px;
+}

@@ -1,0 +1,22 @@
+.root {
+  display: inline-block;
+
+  width: max-content;
+  padding: 5px 20px;
+
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+  color: $fg-primary;
+
+  border: 1px solid;
+  border-radius: 10px;
+
+  &--color_green {
+    border-color: $green;
+  }
+
+  &--color_violet {
+    border-color: $violet;
+  }
+}

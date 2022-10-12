@@ -1,0 +1,31 @@
+.root {
+  display: grid;
+
+  justify-items: center;
+
+  padding: 18px 0;
+}
+
+.social-links {
+  display: grid;
+
+  grid-auto-flow: column;
+
+  column-gap: 51px;
+
+  width: max-content;
+  padding: 5px 41px;
+
+  background-color: rgba($accent, 0.7);
+  border-radius: 20px;
+}
+
+.social-media {
+  display: grid;
+
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+}

@@ -1,0 +1,42 @@
+.root {
+  @include container;
+}
+
+.layout {
+  display: grid;
+
+  grid-template-columns: 1fr max-content 216px;
+  grid-auto-flow: column;
+
+  column-gap: 40px;
+
+  align-items: center;
+
+  padding: 18px 0;
+}
+
+.logo {
+  position: relative;
+
+  width: 69px;
+  height: 100%;
+
+  svg {
+    position: absolute;
+
+    width: 92px;
+    height: 98px;
+  }
+}
+
+.nav {
+  display: grid;
+
+  grid-auto-flow: column;
+
+  column-gap: 60px;
+}
+
+.account {
+  justify-self: end;
+}

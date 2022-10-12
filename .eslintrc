@@ -53,7 +53,8 @@
       110,
       {
         "ignorePattern": "^import\\s.+\\sfrom\\s.+;$",
-        "ignoreUrls": true
+        "ignoreUrls": true,
+        "ignoreStrings": true
       }
     ],
     "react/display-name": "off",

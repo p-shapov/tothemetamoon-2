@@ -1,0 +1,66 @@
+.root {
+  display: grid;
+
+  justify-items: center;
+
+  width: 100%;
+
+  overflow: hidden;
+
+  background-color: $bg-primary;
+  border-radius: 20px;
+
+  > * {
+    grid-row: 1;
+    grid-column: 1;
+  }
+}
+
+.fill {
+  justify-self: start;
+
+  width: 100%;
+  height: 100%;
+
+  &--not-completed {
+    background-image: linear-gradient(
+      to right,
+      $green calc(100% - 100px),
+      $bg-primary 100%
+    );
+    background-repeat: no-repeat;
+
+    transition: max-width 0.3s ease-in-out;
+
+    animation: 5s ease-in-out infinite pulse;
+  }
+}
+
+.value {
+  z-index: 1;
+
+  display: inline-block;
+
+  padding: 10px 0;
+
+  font-size: 24px;
+
+  font-weight: 500;
+  line-height: 29px;
+
+  color: $fg-primary;
+}
+
+@keyframes pulse {
+  0% {
+    background-position: 0;
+  }
+
+  50% {
+    background-position: -5px 0;
+  }
+
+  100% {
+    background-position: 0;
+  }
+}

@@ -1,0 +1,45 @@
+.root {
+  @include aspect-ratio;
+
+  width: 100%;
+
+  overflow: hidden;
+
+  border-radius: 6px;
+}
+
+.layout {
+  display: grid;
+
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  > * {
+    grid-row: 1;
+    grid-column: 1;
+
+    animation-name: fade-in;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+  }
+}
+
+.logo {
+  align-self: center;
+  justify-self: center;
+
+  width: 20%;
+  height: 20%;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

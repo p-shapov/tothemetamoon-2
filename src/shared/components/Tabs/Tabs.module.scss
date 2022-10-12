@@ -1,0 +1,19 @@
+.root {
+  display: grid;
+
+  row-gap: 37px;
+
+  height: max-content;
+}
+
+.item {
+  position: relative;
+
+  width: max-content;
+}
+
+.badge {
+  position: absolute;
+  bottom: 36px;
+  left: 100%;
+}

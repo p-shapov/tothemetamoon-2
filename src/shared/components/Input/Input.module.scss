@@ -1,0 +1,36 @@
+.root {
+  display: grid;
+
+  align-items: center;
+
+  width: 100%;
+  max-width: 320px;
+
+  > * {
+    grid-row: 1;
+    grid-column: 1;
+  }
+}
+
+.input {
+  width: 100%;
+
+  padding: 10px 20px;
+
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 29px;
+
+  border: 1px solid $accent;
+  border-radius: 20px;
+}
+
+.label {
+  padding: 0 20px;
+
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 29px;
+
+  pointer-events: none;
+}

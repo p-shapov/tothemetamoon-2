@@ -1,0 +1,48 @@
+.root {
+  display: grid;
+
+  grid-template-columns: 1fr max-content;
+
+  row-gap: 10px;
+
+  width: 100%;
+  height: max-content;
+}
+
+.term {
+  display: grid;
+
+  grid-template-rows: max-content;
+  grid-template-columns: max-content 1fr;
+
+  align-items: end;
+
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 29px;
+
+  > * {
+    grid-row: 1;
+  }
+
+  &::before {
+    content: '';
+
+    display: block;
+
+    grid-row: 1;
+    grid-column: 2;
+
+    width: calc(100% - 10px);
+    height: 5px;
+    margin: 0 5px;
+
+    border-top: 1px solid $fg-primary;
+  }
+}
+
+.definition {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 29px;
+}

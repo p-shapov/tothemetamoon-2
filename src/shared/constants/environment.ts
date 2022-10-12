@@ -1,4 +1,4 @@
-export const ENV = {
+export const ENVIRONMENT = {
   BASE_URL: process.env.BASE_URL,
   PREFERRED_CHAIN_ID: process.env.PREFERRED_CHAIN_ID,
   ALCHEMY_API_KEY: process.env.ALCHEMY_API_KEY,
