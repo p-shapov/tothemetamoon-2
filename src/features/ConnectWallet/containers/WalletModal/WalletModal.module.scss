@@ -1,0 +1,79 @@
+.root {
+  display: grid;
+
+  row-gap: 42px;
+
+  color: $fg-primary;
+}
+
+.image {
+  @include aspect-ratio;
+
+  position: relative;
+
+  width: 40%;
+  max-width: 100px;
+  margin: 0 auto;
+
+  &--qrcode {
+    width: 50%;
+    max-width: 300px;
+  }
+}
+
+.loader {
+  position: absolute;
+
+  align-self: center;
+  justify-self: center;
+
+  width: 160%;
+  height: 160%;
+
+  color: $accent;
+}
+
+.info {
+  display: grid;
+
+  row-gap: 10px;
+
+  justify-items: center;
+}
+
+.status {
+  justify-self: center;
+
+  font-size: 24px;
+  line-height: 120%;
+
+  text-align: center;
+}
+
+.message {
+  max-width: 300px;
+
+  font-size: 16px;
+  line-height: 120%;
+
+  text-align: center;
+  white-space: pre-wrap;
+
+  opacity: 0.7;
+}
+
+.back {
+  justify-self: center;
+
+  margin-top: 20px;
+
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 120%;
+
+  text-transform: uppercase;
+
+  opacity: 0.7;
+
+  cursor: pointer;
+}

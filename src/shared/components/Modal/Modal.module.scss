@@ -14,22 +14,31 @@
 .content {
   display: grid;
 
+  row-gap: 42px;
+
   align-self: center;
 
+  width: 100%;
+  max-width: 658px;
   height: max-content;
+  padding: 40px 60px;
   margin: 0 auto;
 
   background-color: $bg-primary;
   border-radius: 30px;
-
-  > * {
-    grid-row: 1;
-    grid-column: 1;
-  }
 }
 
-.close {
+.header {
+  display: flex;
+
+  justify-content: space-between;
   justify-self: end;
 
-  margin: 32px 20px 0 0;
+  width: 100%;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 44px;
 }

@@ -1,0 +1,23 @@
+.root {
+  display: grid;
+
+  row-gap: 42px;
+
+  color: $fg-primary;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 44px;
+}
+
+.list {
+  display: grid;
+
+  row-gap: 35px;
+
+  width: 100%;
+  max-width: 290px;
+  margin: 0 auto;
+}

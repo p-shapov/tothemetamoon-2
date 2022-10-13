@@ -1,4 +1,4 @@
-import { FetchData } from 'shared/types/fetchData';
+import { FetchData } from './types';
 
 export const fetchNothing = <T>(): FetchData<T> => ({
   value: null,

@@ -1,10 +1,11 @@
 import { FC } from 'react';
 import NextLink from 'next/link';
 
+import { ConnectButton } from 'features/ConnectWallet/containers/ConnectButton';
+
 import { Link } from 'shared/components/Link';
 import { Path } from 'shared/types/path';
 import { ico_metalamp } from 'shared/icons/metalamp';
-import { Button } from 'shared/components/Button';
 
 import { headerNav } from '../data';
 import styles from './Header.module.scss';
@@ -28,7 +29,7 @@ export const Header: FC = () => {
         </nav>
 
         <div className={styles['account']}>
-          <Button>Connect</Button>
+          <ConnectButton showAddress />
         </div>
       </div>
     </header>
