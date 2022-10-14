@@ -41,6 +41,11 @@
             "pattern": "shared/**",
             "group": "parent",
             "position": "before"
+          },
+          {
+            "pattern": "store/**",
+            "group": "parent",
+            "position": "before"
           }
         ],
         "pathGroupsExcludedImportTypes": ["services"],

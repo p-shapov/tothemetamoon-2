@@ -1,0 +1,209 @@
+.root {
+  @include container;
+}
+
+.layout {
+  display: grid;
+
+  row-gap: 30px;
+
+  padding: 74px 110px 0;
+}
+
+.title {
+  font-size: 100px;
+  font-weight: 500;
+  line-height: 122px;
+  color: $fg-primary;
+}
+
+.logo {
+  position: relative;
+
+  display: inline-block;
+
+  width: 60px;
+  height: 52px;
+
+  svg {
+    position: absolute;
+
+    width: 69px;
+    height: 74px;
+  }
+}
+
+.description {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 29px;
+  color: $fg-primary;
+}
+
+.buttons {
+  display: grid;
+
+  grid-auto-flow: column;
+
+  column-gap: 20px;
+
+  width: max-content;
+}
+
+.orbit {
+  @include aspect-ratio;
+
+  position: fixed;
+  top: 25vh;
+  right: calc(-100% + 42vw);
+  z-index: 0;
+
+  display: grid;
+
+  width: 118vw;
+
+  pointer-events: none;
+}
+
+.to-the-moon {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+
+  width: 59vw;
+
+  path {
+    stroke-dasharray: 10000;
+    stroke-dashoffset: 10000;
+
+    animation: to-the-moon 4s ease 1s forwards;
+  }
+}
+
+.planet {
+  width: 100%;
+  height: 100%;
+
+  background-image: radial-gradient(
+    46% 46% at 56.43% 27.66%,
+    #fff 0%,
+    rgba(#d9d9d9, 0) 100%
+  );
+  border-radius: 50%;
+
+  animation: rotate-planet 20s linear infinite both;
+}
+
+.spaceship {
+  position: absolute;
+  top: 20vh;
+  left: 20vw;
+  z-index: 0;
+
+  display: grid;
+
+  width: 277px;
+  height: 277px;
+
+  > * {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  &--floating {
+    animation: spaceship-to-the-orbit 1.5s linear 0.5s both,
+      floating 5s linear 2.1s infinite;
+  }
+
+  &--to-the-moon {
+    animation: spaceship-to-the-moon 2s linear 1s both;
+  }
+}
+
+.rocket-flame {
+  position: relative;
+  top: 140px;
+  left: -50px;
+  z-index: -1;
+
+  display: grid;
+
+  animation: flame-burst 0.5s ease-in;
+}
+
+@keyframes rotate-planet {
+  0% {
+    transform: rotateZ(0deg);
+  }
+
+  50% {
+    transform: rotateZ(15deg);
+  }
+
+  100% {
+    transform: rotateZ(0deg);
+  }
+}
+
+@keyframes to-the-moon {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes spaceship-to-the-orbit {
+  0% {
+    transform: translate(-200px, 400px);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes spaceship-to-the-moon {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  100% {
+    transform: translate(1000px, -1500px);
+  }
+}
+
+@keyframes floating {
+  0% {
+    transform: translate(0);
+  }
+
+  25% {
+    transform: translate(5px, -5px);
+  }
+
+  50% {
+    transform: translate(0, -10px);
+  }
+
+  75% {
+    transform: translate(-5px, -5px);
+  }
+
+  100% {
+    transform: translate(0);
+  }
+}
+
+@keyframes flame-burst {
+  0% {
+    opacity: 0;
+
+    transform: scale(0.5);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: scale(1);
+  }
+}

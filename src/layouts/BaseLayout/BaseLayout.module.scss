@@ -98,6 +98,7 @@ $right-diagonal-gradient: linear-gradient(
 .header {
   position: fixed;
   top: 0;
+  z-index: 1000;
 
   width: 100%;
 }
@@ -109,6 +110,7 @@ $right-diagonal-gradient: linear-gradient(
 .footer {
   position: fixed;
   bottom: 0;
+  z-index: 1000;
 
   width: 100%;
 }

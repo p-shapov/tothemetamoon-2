@@ -1,34 +1,32 @@
 import cn from 'classnames';
 import { FC } from 'react';
+import { observer } from 'mobx-react-lite';
 
 import { ConnectorId } from 'services/WagmiClient/types';
 
 import { Qrcode } from 'shared/components/Qrcode';
 import { ico_loader } from 'shared/icons/loader';
+import { Modal } from 'shared/components/Modal';
 
-import { useConnectWallet } from '../../hooks/useConnectWallet';
 import { walletModalMap } from './data';
-import styles from './WalletModal.module.scss';
-import { useQrcode } from './hooks';
-import { ModalWithClose } from '../ModalWithClose';
+import styles from './Wallet.module.scss';
 
-export type WalletModalProps = {
+export type WalletProps = {
   id: ConnectorId;
+  qrcode?: string | null;
+  error: Error | null;
+  isLoading: boolean;
+  onClose(): void;
+  onBack(): void;
 };
 
-export const WalletModal: FC<WalletModalProps> = ({ id }) => {
-  const qrcode = useQrcode(id);
-  const {
-    store: { setModal },
-    wagmi: { error, isLoading },
-  } = useConnectWallet();
-
+export const Wallet: FC<WalletProps> = observer(({ id, qrcode, error, isLoading, onBack, onClose }) => {
   const { title, icon, tipExtension, tipQrcode } = walletModalMap[id];
 
   const tip = qrcode ? tipQrcode : tipExtension;
 
   return (
-    <ModalWithClose title={title}>
+    <Modal title={title} onClose={onClose}>
       <div className={styles['root']}>
         <div className={cn(styles['image'], qrcode && styles['image--qrcode'])}>
           {qrcode && <Qrcode value={qrcode} logo={icon} />}
@@ -40,11 +38,11 @@ export const WalletModal: FC<WalletModalProps> = ({ id }) => {
           <span className={styles['status']}>{error ? 'Request failed' : 'Requesting Connection'}</span>
           <span className={styles['message']}>{error ? error.message : tip}</span>
 
-          <button type="button" className={styles['back']} onClick={setModal.bind(null, 'connect')}>
+          <button type="button" className={styles['back']} onClick={onBack}>
             Go back
           </button>
         </div>
       </div>
-    </ModalWithClose>
+    </Modal>
   );
-};
+});

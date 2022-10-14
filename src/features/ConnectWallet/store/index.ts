@@ -3,25 +3,36 @@ import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 
 import { autoFetchable } from 'services/AutoFetchable';
+import { ConnectorId } from 'services/WagmiClient/types';
+import { connectors } from 'services/WagmiClient/connectors';
 
-import { ModalName, ConnectWalletParams } from './types';
+import { ModalName } from './types';
 
 export class ConnectWalletStore {
   public modal: ModalName | null = null;
-  public qrcode = autoFetchable({
-    fetch: () => this.fetchQrcode,
-  });
+  public get qrcode() {
+    return this.qrcodeAutoFetchable.data;
+  }
+  public connectorId: null | ConnectorId = null;
+
+  public readonly setConnectorId = (id: ConnectorId | null) => {
+    this.connectorId = id;
+  };
 
   public readonly setModal = (modal: ModalName | null) => {
     this.modal = modal;
   };
 
-  constructor(private readonly params: ConnectWalletParams) {
+  constructor() {
     makeAutoObservable(this);
   }
 
+  private readonly qrcodeAutoFetchable = autoFetchable({
+    fetch: () => this.fetchQrcode,
+  });
+
   private get fetchQrcode() {
-    const { connector } = this.params;
+    const connector = this.connectorId && connectors[this.connectorId];
 
     return flow(function* () {
       let qrcode: string | null = null;

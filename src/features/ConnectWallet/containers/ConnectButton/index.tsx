@@ -1,28 +1,30 @@
 import { FC } from 'react';
+import { useAccount, useDisconnect } from 'wagmi';
+
+import { useConnectWallet } from 'features/ConnectWallet/store/useConnectWallet';
 
 import { Button } from 'shared/components/Button';
 import { trim } from 'shared/utils/trim';
-
-import { useConnectWallet } from '../../hooks/useConnectWallet';
+import { useSsr } from 'shared/hooks/useSsr';
 
 export type ConnectButtonProps = {
   showAddress?: boolean;
 };
 
 export const ConnectButton: FC<ConnectButtonProps> = ({ showAddress = false }) => {
-  const {
-    store: { setModal },
-    wagmi: { address, disconnect },
-  } = useConnectWallet();
+  const isSsr = useSsr();
+  const { address } = useAccount();
+  const { disconnect } = useDisconnect();
+  const { setModal } = useConnectWallet();
 
   const handleClick = () => {
     if (address) disconnect();
-    else setModal('connect');
+    else setModal('wallets');
   };
 
   return (
     <Button onClick={handleClick}>
-      {address ? (showAddress ? trim(address, 4, 6) : 'Disconnect') : 'Connect'}
+      {address && !isSsr ? (showAddress ? trim(address, 4, 6) : 'Disconnect') : 'Connect'}
     </Button>
   );
 };
