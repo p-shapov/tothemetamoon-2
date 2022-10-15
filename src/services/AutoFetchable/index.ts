@@ -3,7 +3,7 @@ import type { CancellablePromise } from 'mobx/dist/internal';
 
 import { fetchError, fetchLoading, fetchNothing, fetchSucceed } from './utils';
 
-export const autoFetchable = <T,>({
+export const autoFetchable = <T>({
   fetch,
   deps = () => void 0,
 }: {

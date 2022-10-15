@@ -9,6 +9,7 @@
 
   background-color: $bg-primary;
   border-radius: 20px;
+  box-shadow: 0 0 50px 1px rgba($accent, 0.3);
 
   > * {
     grid-row: 1;

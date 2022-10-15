@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useAccount, useDisconnect } from 'wagmi';
 
-import { useConnectWallet } from 'features/ConnectWallet/store/useConnectWallet';
+import { useConnectWallet } from 'features/ConnectWallet/hooks/useConnectWallet';
 
 import { Button } from 'shared/components/Button';
 import { trim } from 'shared/utils/trim';

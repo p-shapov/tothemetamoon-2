@@ -1,22 +1,22 @@
 import cn from 'classnames';
 import { FC } from 'react';
 
-import styles from './Orogress.module.scss';
+import styles from './Progress.module.scss';
 
 export type ProgressProps = {
-  value: number;
-  total: number;
-  format?(value: number, total: number): string;
+  children: number;
+  max: number;
+  format?(value: number, max: number): string;
 };
 
-export const Progress: FC<ProgressProps> = ({ value, total, format = (value) => value }) => {
+export const Progress: FC<ProgressProps> = ({ children: value, max, format = (value) => value }) => {
   return (
     <div className={styles['root']}>
       <div
-        className={cn(styles['fill'], value !== total && styles['fill--not-completed'])}
-        style={{ maxWidth: `${Math.trunc((value / total) * 100)}%` }}
+        className={cn(styles['fill'], value !== max && styles['fill--not-completed'])}
+        style={{ maxWidth: `${Math.trunc((value / max) * 100)}%` }}
       />
-      <span className={styles['value']}>{format(value, total)}</span>
+      <span className={styles['value']}>{format(value, max)}</span>
     </div>
   );
 };

@@ -2,7 +2,7 @@ import { FC, ReactElement } from 'react';
 import { useConnect } from 'wagmi';
 import { observer } from 'mobx-react-lite';
 
-import { useConnectWallet } from 'features/ConnectWallet/store/useConnectWallet';
+import { useConnectWallet } from 'features/ConnectWallet/hooks/useConnectWallet';
 import { Wallet } from 'features/ConnectWallet/components/Wallet';
 import { ModalName } from 'features/ConnectWallet/store/types';
 import { Wallets } from 'features/ConnectWallet/components/Wallets';

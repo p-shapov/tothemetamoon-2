@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "tsm": "typed-scss-modules src/**/*.module.scss -n none -e default -d @import'./src/shared/styles/index.scss'; -u",
-    "dev": "concurrently \"yarn tsm -w\" \"next dev\"",
-    "build": "yarn tsm && next build",
-    "start": "concurrently \"yarn tsm -w\" \"next start\"",
+    "typed-chain": "typechain ./public/abis/*.json --target ethers-v5 --out-dir ./src/contracts/",
+    "typed-scss": "typed-scss-modules src/**/*.module.scss -n none -e default -d @import'./src/shared/styles/index.scss'; -u",
+    "dev": "concurrently \"yarn typed-scss -w\" \"next dev\"",
+    "build": "yarn typed-scss && typed-chain && next build",
+    "start": "concurrently \"yarn typed-scss -w\" \"next start\"",
     "prepare": "husky install",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "yarn typed-chain"
   },
   "dependencies": {
     "axios": "^0.27.2",
@@ -25,6 +27,7 @@
     "wagmi": "^0.6.8"
   },
   "devDependencies": {
+    "@typechain/ethers-v5": "^10.1.0",
     "@types/node": "18.7.14",
     "@types/react": "18.0.18",
     "@types/react-dom": "18.0.6",
@@ -46,6 +49,7 @@
     "stylelint-declaration-block-no-ignored-properties": "^2.5.0",
     "stylelint-prettier": "^2.0.0",
     "stylelint-scss": "^4.3.0",
+    "typechain": "^8.1.0",
     "typed-scss-modules": "^6.5.0",
     "typescript": "4.8.2"
   }
