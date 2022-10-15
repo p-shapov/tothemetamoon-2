@@ -10,10 +10,11 @@ import { ModalName } from './types';
 
 export class ConnectWalletStore {
   public modal: ModalName | null = null;
+  public connectorId: null | ConnectorId = null;
+
   public get qrcode() {
     return this.qrcodeAutoFetchable.data;
   }
-  public connectorId: null | ConnectorId = null;
 
   public readonly setConnectorId = (id: ConnectorId | null) => {
     this.connectorId = id;
@@ -27,7 +28,7 @@ export class ConnectWalletStore {
     makeAutoObservable(this);
   }
 
-  private readonly qrcodeAutoFetchable = autoFetchable({
+  public readonly qrcodeAutoFetchable = autoFetchable({
     fetch: () => this.fetchQrcode,
   });
 

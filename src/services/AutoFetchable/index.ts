@@ -14,6 +14,12 @@ export const autoFetchable = <T>({
 export class AutoFetchable<T> {
   public data = fetchNothing<T>();
 
+  public readonly forceUpdate = (value: T) => {
+    runInAction(() => {
+      this.data = fetchSucceed(value);
+    });
+  };
+
   constructor(
     private readonly fetch: () => () => CancellablePromise<T> | T,
     private readonly deps: () => unknown,

@@ -1,13 +1,19 @@
 import { ReactElement } from 'react';
 
+import { Path } from 'services/Router/types';
+
 import { Link } from 'shared/components/Link';
-import { Badge, BadgeProps } from 'shared/components/Badge';
 
 import styles from './Tabs.module.scss';
 
 export type TabsProps<T extends string> = {
   active: T;
-  items: Array<{ id: T; to?: string; text: string; badge?: { color: BadgeProps['color']; text: string } }>;
+  items: Array<{
+    id: T;
+    to?: Path;
+    text: string;
+    badge?: ReactElement;
+  }>;
   onChange?(id: T): void;
 };
 
@@ -20,14 +26,10 @@ export const Tabs = <T extends string>({
     <ul className={styles['root']}>
       {items.map(({ id, to, text, badge }) => (
         <li key={id} className={styles['item']}>
-          <Link to={to} size="lg" isActive={to === active} onClick={onChange.bind(null, id)}>
+          <Link to={to} size="lg" isActive={id === active} onClick={onChange.bind(null, id)}>
             {text}
           </Link>
-          {badge && (
-            <span className={styles['badge']}>
-              <Badge color={badge.color}>{badge.text}</Badge>
-            </span>
-          )}
+          {badge && <span className={styles['badge']}>{badge}</span>}
         </li>
       ))}
     </ul>

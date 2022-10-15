@@ -4,7 +4,6 @@ import NextLink from 'next/link';
 import { ConnectButton } from 'features/ConnectWallet/containers/ConnectButton';
 
 import { Link } from 'shared/components/Link';
-import { Path } from 'shared/types/path';
 import { ico_metalamp } from 'shared/icons/metalamp';
 
 import { headerNav } from '../data';
@@ -14,7 +13,7 @@ export const Header: FC = () => {
   return (
     <header className={styles['root']}>
       <div className={styles['layout']}>
-        <NextLink href={Path.HOME} passHref>
+        <NextLink href="/" passHref>
           <a className={styles['logo']}>{ico_metalamp}</a>
         </NextLink>
 

@@ -1,14 +1,12 @@
 import { FC } from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { useMaxSupply } from 'features/ShowMintedNFTs/hooks/useMaxSupply';
-import { useTotalSupply } from 'features/ShowMintedNFTs/hooks/useTotalSupply';
+import { useShowMintedNFTs } from 'features/ShowMintedNFTs/hooks/useShowMintedNFTs';
 
 import { Progress } from 'shared/components/Progress';
 
-export const MintedNFTProgress: FC = observer(() => {
-  const totalSupply = useTotalSupply();
-  const maxSupply = useMaxSupply();
+export const MintedNFTs: FC = observer(() => {
+  const { totalSupply, maxSupply } = useShowMintedNFTs();
 
   return (
     <>
