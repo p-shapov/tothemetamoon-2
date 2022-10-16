@@ -4,9 +4,12 @@ import { BimkonEyes } from 'src/contracts';
 
 import { autoFetchable } from 'services/AutoFetchable';
 
+import { SaleState } from 'shared/types/saleStatus';
+import { stateToPhase } from 'shared/utils/stateToPhase';
+
 export class ClaimAirdrop {
-  public get state() {
-    return this.stateAutoFetchable.data;
+  public get phase() {
+    return this.phaseAutoFetchable.data;
   }
 
   constructor(private readonly bimkonEyes: BimkonEyes, private readonly address?: string) {
@@ -14,29 +17,29 @@ export class ClaimAirdrop {
     this.runStateChangeListener();
   }
 
-  private readonly stateAutoFetchable = autoFetchable({
-    fetch: () => this.fetchState,
+  private readonly phaseAutoFetchable = autoFetchable({
+    fetch: () => this.fetchPhase,
   });
 
   private readonly runStateChangeListener = () => {
-    const handleStateChange = (value: 0 | 1 | 2) => this.stateAutoFetchable.forceUpdate(value);
+    const handleStateChange = (state: SaleState) => this.phaseAutoFetchable.forceUpdate(stateToPhase(state));
 
-    onBecomeObserved(this, 'state', () => {
+    onBecomeObserved(this, 'phase', () => {
       if (this.bimkonEyes.signer) this.bimkonEyes.on('SetAirDropState', handleStateChange);
     });
 
-    onBecomeUnobserved(this, 'state', () => {
+    onBecomeUnobserved(this, 'phase', () => {
       if (this.bimkonEyes.signer) this.bimkonEyes.off('SetAirDropState', handleStateChange);
     });
   };
 
-  private get fetchState() {
+  private get fetchPhase() {
     const bimkonEyes = this.bimkonEyes;
 
     return flow(function* () {
       const state = yield bimkonEyes.airDrop();
 
-      if (state === 0 || state === 1 || state === 2) return state as 0 | 1 | 2;
+      if (state === 0 || state === 1 || state === 2) return stateToPhase(state);
 
       throw new Error('Airdrop state fetch error');
     });

@@ -1,9 +1,9 @@
 import { FC, ReactNode } from 'react';
 
 import { MintedNFTs } from 'features/ShowMintedNFTs/containers/MintedNFTs';
-import { AirdropStatus } from 'features/ClaimAirdrop/containers/AirdropStatus';
-import { PresaleStatus } from 'features/WhitelistMint/containers/PresaleStatus';
-import { SaleStatus } from 'features/PublicMint/containers/SaleStatus';
+import { AirdropPhase } from 'features/ClaimAirdrop/containers/AirdropPhase';
+import { PresalePhase } from 'features/WhitelistMint/containers/PresalePhase';
+import { SalePhase } from 'features/PublicMint/containers/SalePhase';
 
 import { Tabs } from 'shared/components/Tabs';
 
@@ -29,19 +29,19 @@ export const MintingLayout: FC<MintingLayoutProps> = ({ id, children }) => {
               id: 'airdrop',
               to: '/airdrop',
               text: 'Airdrop',
-              badge: <AirdropStatus />,
+              badge: <AirdropPhase />,
             },
             {
               id: 'presale',
               to: '/presale',
               text: 'Private Presale',
-              badge: <PresaleStatus />,
+              badge: <PresalePhase />,
             },
             {
               id: 'sale',
               to: '/sale',
               text: 'Public Sale',
-              badge: <SaleStatus />,
+              badge: <SalePhase />,
             },
           ]}
         />
