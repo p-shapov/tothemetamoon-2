@@ -1,0 +1,33 @@
+.root {
+  display: grid;
+
+  row-gap: 31px;
+
+  width: 100%;
+  height: max-content;
+
+  color: $fg-primary;
+}
+
+.title {
+  position: relative;
+
+  width: max-content;
+
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 49px;
+}
+
+.badge {
+  position: absolute;
+  bottom: 36px;
+  left: calc(100% + 8px);
+}
+
+.paragraph {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 29px;
+  white-space: pre-wrap;
+}

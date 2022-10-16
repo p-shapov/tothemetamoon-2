@@ -1,4 +1,4 @@
-import { flow, makeAutoObservable, onBecomeObserved, onBecomeUnobserved } from 'mobx';
+import { flow, makeAutoObservable, onBecomeObserved, onBecomeUnobserved, runInAction } from 'mobx';
 import { BigNumber } from 'ethers';
 
 import { BimkonEyes } from 'src/contracts';
@@ -6,13 +6,47 @@ import { BimkonEyes } from 'src/contracts';
 import { getAirdropProof } from 'api/controllers/airdrop';
 
 import { autoFetchable } from 'services/AutoFetchable';
-import { fetchNothing } from 'services/AutoFetchable/utils';
+import { fetchError, fetchLoading, fetchNothing, fetchSucceed } from 'services/AutoFetchable/utils';
 
 import { SaleState } from 'shared/types/saleStatus';
 import { stateToPhase } from 'shared/utils/stateToPhase';
 
 export class ClaimAirdrop {
   public claimStatus = fetchNothing<'pending' | 'confirmed'>();
+
+  public get isSoon() {
+    const phase = this.phase.value;
+    const whitelisted = this.whitelisted.value;
+
+    return whitelisted && phase === 'soon';
+  }
+
+  public get isClaimed() {
+    const totalSupply = this.totalSupply.value;
+    const maxSupply = this.maxSupply.value;
+    const whitelisted = this.whitelisted.value;
+
+    return whitelisted && totalSupply === maxSupply;
+  }
+
+  public get isFinished() {
+    const phase = this.phase.value;
+
+    return phase === 'finished' && !this.isClaimed;
+  }
+
+  public get isAvailable() {
+    const phase = this.phase.value;
+    const whitelisted = this.whitelisted.value;
+
+    return whitelisted && phase === 'available' && !this.isClaimed;
+  }
+
+  public get isNotWhitelisted() {
+    const whitelisted = this.whitelisted.value;
+
+    return whitelisted !== null && !whitelisted && !this.isFinished;
+  }
 
   public get phase() {
     return this.phaseAutoFetchable.data;
@@ -30,8 +64,33 @@ export class ClaimAirdrop {
     return this.maxSupplyAutoFetchable.data;
   }
 
-  public readonly claim = () => {
-    // TODO :: claim method implementation
+  public readonly claim = async () => {
+    const address = this.address;
+    const bimkonEyes = this.bimkonEyes;
+
+    this.claimStatus = fetchLoading(this.claimStatus.value);
+
+    if (address) {
+      try {
+        const proof = await getAirdropProof(address);
+        const allowedToClaim = await bimkonEyes.allowedToClaimDropAmount(address);
+        const transaction = await bimkonEyes.claimAirdrop(proof, allowedToClaim);
+
+        runInAction(() => {
+          this.claimStatus = fetchSucceed('pending');
+        });
+
+        await transaction.wait();
+
+        runInAction(() => {
+          this.claimStatus = fetchSucceed('confirmed');
+        });
+      } catch (error) {
+        runInAction(() => {
+          this.claimStatus = fetchError(error, this.claimStatus.value);
+        });
+      }
+    }
   };
 
   constructor(private readonly bimkonEyes: BimkonEyes, private readonly address?: string) {
@@ -49,6 +108,7 @@ export class ClaimAirdrop {
 
   private readonly totalSupplyAutoFetchable = autoFetchable({
     fetch: () => this.fetchTotalSupply,
+    deps: () => this.claimStatus.value === 'confirmed',
   });
 
   private readonly maxSupplyAutoFetchable = autoFetchable({

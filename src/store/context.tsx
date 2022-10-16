@@ -33,10 +33,14 @@ export const StoreProvider: FC<{ children: ReactNode }> = observer(({ children }
   });
 
   const connectWallet = useMemo(() => new ConnectWalletStore(), []);
-  const showMintedNFTs = useMemo(() => new ShowMintedNFTs(bimkonEyes), [bimkonEyes]);
   const claimAirdrop = useMemo(() => new ClaimAirdrop(bimkonEyes, address), [address, bimkonEyes]);
   const publicMint = useMemo(() => new PublicMint(bimkonEyes, address), [address, bimkonEyes]);
   const whitelistMint = useMemo(() => new WhitelistMint(bimkonEyes, address), [address, bimkonEyes]);
+  const showMintedNFTs = useMemo(
+    () => new ShowMintedNFTs(bimkonEyes, () => [claimAirdrop.claimStatus.value]),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [bimkonEyes],
+  );
 
   return (
     <StoreContext.Provider value={{ connectWallet, showMintedNFTs, claimAirdrop, publicMint, whitelistMint }}>

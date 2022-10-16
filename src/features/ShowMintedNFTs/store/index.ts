@@ -14,13 +14,13 @@ export class ShowMintedNFTs {
     return this.maxSupplyAutoFetchable.data;
   }
 
-  constructor(private readonly bimkonEyes: BimkonEyes, private readonly totalSupplyDeps?: unknown) {
+  constructor(private readonly bimkonEyes: BimkonEyes, private readonly totalSupplyDeps?: () => unknown) {
     makeAutoObservable(this);
   }
 
   private readonly totalSupplyAutoFetchable = autoFetchable({
     fetch: () => this.fetchTotalSupply,
-    deps: () => this.totalSupplyDeps,
+    deps: this.totalSupplyDeps,
   });
 
   private readonly maxSupplyAutoFetchable = autoFetchable({
