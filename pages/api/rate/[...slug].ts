@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'GET': {
         const rate = await coingecko.getRate(coinId, currency);
 
-        return res.status(200).json(rate);
+        return res.status(200).send(rate);
       }
       default: {
         res.setHeader('Allow', ['GET']);
