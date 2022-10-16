@@ -13,35 +13,45 @@ import { Pair } from 'services/Pair';
 import { SaleState } from 'shared/types/saleStatus';
 import { stateToPhase } from 'shared/utils/stateToPhase';
 import { formatToEth } from 'shared/utils/formatToEth';
+import { TransactionStatus } from 'shared/types/transactionStatus';
 
 export class PublicMint {
-  public mintStatus = fetchNothing<'pending' | 'confirmed'>();
+  public mintStatus = fetchNothing<TransactionStatus>();
 
   public amountToMint = 1;
 
   public get isSoon() {
-    const phase = this.phase.value;
-
-    return phase === 'soon';
+    return (
+      this.allowedToMintAutoFetchable.hasValue &&
+      this.phaseAutoFetchable.hasValue &&
+      this.phase.value === 'soon'
+    );
   }
 
   public get isAllMinted() {
-    const totalSupply = this.totalSupply.value;
-    const maxSupply = this.maxSupply.value;
-
-    return !(totalSupply === null || maxSupply === null) && totalSupply === maxSupply;
+    return (
+      this.phaseAutoFetchable.hasValue &&
+      this.allowedToMintAutoFetchable.hasValue &&
+      this.allowedToMint.value === 0
+    );
   }
 
   public get isFinished() {
-    const phase = this.phase.value;
-
-    return phase === 'finished' && !this.isAllMinted;
+    return (
+      this.allowedToMintAutoFetchable.hasValue &&
+      this.phaseAutoFetchable.hasValue &&
+      this.phase.value === 'finished' &&
+      !this.isAllMinted
+    );
   }
 
   public get isAvailable() {
-    const phase = this.phase.value;
-
-    return phase === 'available' && !this.isAllMinted;
+    return (
+      this.allowedToMintAutoFetchable.hasValue &&
+      this.phaseAutoFetchable.hasValue &&
+      this.phase.value === 'available' &&
+      !this.isAllMinted
+    );
   }
 
   public get price() {
@@ -49,9 +59,7 @@ export class PublicMint {
   }
 
   public get totalCost() {
-    const price = this.price.value;
-
-    return price && price.mul(this.amountToMint);
+    return this.price.value && this.price.value.mul(this.amountToMint);
   }
 
   public get phase() {
@@ -83,7 +91,7 @@ export class PublicMint {
     const bimkonEyes = this.bimkonEyes;
     const signatureChecker = this.signatureChecker;
 
-    this.mintStatus = fetchLoading(this.mintStatus.value);
+    this.mintStatus = fetchLoading<TransactionStatus>(this.mintStatus.value);
 
     if (address) {
       try {
@@ -108,7 +116,7 @@ export class PublicMint {
         });
       } catch (error) {
         runInAction(() => {
-          this.mintStatus = fetchError(error, this.mintStatus.value);
+          this.mintStatus = fetchError<TransactionStatus>(error, this.mintStatus.value);
         });
       }
     }

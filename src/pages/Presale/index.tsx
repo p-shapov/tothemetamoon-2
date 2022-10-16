@@ -53,7 +53,7 @@ export const Presale: Page = observer(() => {
       )}
       {isAllMinted && (
         <div className={styles['info']}>
-          <TextSection title="You minted all allowed amount!">See ya on public sale!</TextSection>
+          <TextSection title="You minted all allowed NFT!">See ya on public sale!</TextSection>
         </div>
       )}
       {isSoon && (

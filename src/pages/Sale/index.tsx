@@ -12,7 +12,7 @@ import { Page } from 'shared/types/page';
 import { useBalancePair } from 'shared/hooks/useBalancePair';
 import { TextSection } from 'shared/components/TextSection';
 
-import styles from './Presale.module.scss';
+import styles from './Sale.module.scss';
 
 export const Sale: Page = observer(() => {
   const balancePair = useBalancePair();
@@ -40,12 +40,12 @@ export const Sale: Page = observer(() => {
       )}
       {isFinished && (
         <div className={styles['info']}>
-          <TextSection title="Public sale is over!">See ya later :)</TextSection>
+          <TextSection title="Public sale is over!">See ya next time :)</TextSection>
         </div>
       )}
       {isAllMinted && (
         <div className={styles['info']}>
-          <TextSection title="You minted all allowed amount!">Thank you for your participation!</TextSection>
+          <TextSection title="You minted all allowed NFT!">Thank you for your participation!</TextSection>
         </div>
       )}
       {isSoon && (

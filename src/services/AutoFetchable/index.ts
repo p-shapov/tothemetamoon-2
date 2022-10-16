@@ -20,6 +20,10 @@ export class AutoFetchable<T> {
     });
   };
 
+  public get hasValue() {
+    return this.data.value !== null;
+  }
+
   constructor(
     private readonly fetch: () => () => CancellablePromise<T> | T,
     private readonly deps: () => unknown,

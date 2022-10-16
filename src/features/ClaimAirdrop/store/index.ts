@@ -10,42 +10,54 @@ import { fetchError, fetchLoading, fetchNothing, fetchSucceed } from 'services/A
 
 import { SaleState } from 'shared/types/saleStatus';
 import { stateToPhase } from 'shared/utils/stateToPhase';
+import { TransactionStatus } from 'shared/types/transactionStatus';
 
 export class ClaimAirdrop {
-  public claimStatus = fetchNothing<'pending' | 'confirmed'>();
+  public claimStatus = fetchNothing<TransactionStatus>();
 
   public get isSoon() {
-    const phase = this.phase.value;
-    const whitelisted = this.whitelisted.value;
-
-    return whitelisted && phase === 'soon';
+    return (
+      this.allowedToClaimAutoFetchable.hasValue &&
+      this.phaseAutoFetchable.hasValue &&
+      this.whitelistedAutoFetchable.hasValue &&
+      !!this.whitelisted.value &&
+      this.phase.value === 'soon'
+    );
   }
 
   public get isClaimed() {
-    const totalSupply = this.totalSupply.value;
-    const maxSupply = this.maxSupply.value;
-    const whitelisted = this.whitelisted.value;
-
-    return whitelisted && totalSupply === maxSupply;
+    return (
+      this.allowedToClaimAutoFetchable.hasValue &&
+      this.phaseAutoFetchable.hasValue &&
+      this.whitelistedAutoFetchable.hasValue &&
+      !!this.whitelisted.value &&
+      this.allowedToClaim.value === 0
+    );
   }
 
   public get isFinished() {
-    const phase = this.phase.value;
-
-    return phase === 'finished' && !this.isClaimed;
+    return this.phaseAutoFetchable.hasValue && this.phase.value === 'finished' && !this.isClaimed;
   }
 
   public get isAvailable() {
-    const phase = this.phase.value;
-    const whitelisted = this.whitelisted.value;
-
-    return whitelisted && phase === 'available' && !this.isClaimed;
+    return (
+      this.allowedToClaimAutoFetchable.hasValue &&
+      this.phaseAutoFetchable.hasValue &&
+      this.whitelistedAutoFetchable.hasValue &&
+      !!this.whitelisted.value &&
+      this.phase.value === 'available' &&
+      !this.isClaimed
+    );
   }
 
   public get isNotWhitelisted() {
-    const whitelisted = this.whitelisted.value;
-
-    return whitelisted !== null && !whitelisted && !this.isFinished;
+    return (
+      this.allowedToClaimAutoFetchable.hasValue &&
+      this.phaseAutoFetchable.hasValue &&
+      this.whitelistedAutoFetchable.hasValue &&
+      !this.whitelisted.value &&
+      !this.isFinished
+    );
   }
 
   public get phase() {
@@ -56,19 +68,15 @@ export class ClaimAirdrop {
     return this.whitelistedAutoFetchable.data;
   }
 
-  public get totalSupply() {
-    return this.totalSupplyAutoFetchable.data;
-  }
-
-  public get maxSupply() {
-    return this.maxSupplyAutoFetchable.data;
+  public get allowedToClaim() {
+    return this.allowedToClaimAutoFetchable.data;
   }
 
   public readonly claim = async () => {
     const address = this.address;
     const bimkonEyes = this.bimkonEyes;
 
-    this.claimStatus = fetchLoading(this.claimStatus.value);
+    this.claimStatus = fetchLoading<TransactionStatus>(this.claimStatus.value);
 
     if (address) {
       try {
@@ -87,7 +95,7 @@ export class ClaimAirdrop {
         });
       } catch (error) {
         runInAction(() => {
-          this.claimStatus = fetchError(error, this.claimStatus.value);
+          this.claimStatus = fetchError<TransactionStatus>(error, this.claimStatus.value);
         });
       }
     }
@@ -106,13 +114,9 @@ export class ClaimAirdrop {
     fetch: () => this.fetchWhitelisted,
   });
 
-  private readonly totalSupplyAutoFetchable = autoFetchable({
-    fetch: () => this.fetchTotalSupply,
+  private readonly allowedToClaimAutoFetchable = autoFetchable({
+    fetch: () => this.allowedToClaimSupply,
     deps: () => this.claimStatus.value === 'confirmed',
-  });
-
-  private readonly maxSupplyAutoFetchable = autoFetchable({
-    fetch: () => this.fetchMaxSupply,
   });
 
   private get fetchPhase() {
@@ -141,32 +145,17 @@ export class ClaimAirdrop {
         throw new Error('Airdrop whitelisted fetch error');
       }
 
-      return null;
+      return false;
     });
   }
 
-  private get fetchTotalSupply() {
+  private get allowedToClaimSupply() {
     const bimkonEyes = this.bimkonEyes;
     const address = this.address;
 
     return flow(function* () {
       if (address) {
-        const bigNumber: BigNumber = yield bimkonEyes.totalAirdropMint(address);
-
-        return bigNumber.toNumber();
-      }
-
-      return null;
-    });
-  }
-
-  private get fetchMaxSupply() {
-    const bimkonEyes = this.bimkonEyes;
-    const address = this.address;
-
-    return flow(function* () {
-      if (address) {
-        const bigNumber: BigNumber = yield bimkonEyes.MAX_AIRDROP_MINT();
+        const bigNumber: BigNumber = yield bimkonEyes.allowedToClaimDropAmount(address);
 
         return bigNumber.toNumber();
       }
