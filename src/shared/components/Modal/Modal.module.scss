@@ -1,6 +1,7 @@
 .root {
   position: fixed;
   top: 0;
+  left: 0;
   z-index: 1000;
 
   display: grid;
@@ -9,6 +10,12 @@
   height: 100%;
 
   background: rgba($bg-primary, 0.5);
+}
+
+.info {
+  display: grid;
+
+  row-gap: 18px;
 }
 
 .content {
@@ -41,4 +48,10 @@
   font-size: 36px;
   font-weight: 600;
   line-height: 44px;
+}
+
+.description {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 29px;
 }

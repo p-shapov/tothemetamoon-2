@@ -4,4 +4,5 @@ import { ENVIRONMENT } from 'shared/constants/environment';
 
 export const axiosConfig: AxiosRequestConfig = {
   baseURL: ENVIRONMENT.BASE_URL,
+  headers: { 'Content-Type': 'multipart/form-data' },
 };

@@ -3,7 +3,7 @@ import { BigNumber } from 'ethers';
 
 import { BimkonEyes } from 'src/contracts';
 
-import { getAirdropProof } from 'api/controllers/airdrop';
+import { getProof } from 'api/controllers/proof';
 
 import { autoFetchable } from 'services/AutoFetchable';
 import { fetchError, fetchLoading, fetchNothing, fetchSucceed } from 'services/AutoFetchable/utils';
@@ -11,6 +11,8 @@ import { fetchError, fetchLoading, fetchNothing, fetchSucceed } from 'services/A
 import { SaleState } from 'shared/types/saleStatus';
 import { stateToPhase } from 'shared/utils/stateToPhase';
 import { TransactionStatus } from 'shared/types/transactionStatus';
+
+const getAirdropProof = getProof.bind(null, 'airdrop');
 
 export class ClaimAirdrop {
   public claimStatus = fetchNothing<TransactionStatus>();

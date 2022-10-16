@@ -11,6 +11,7 @@ import { ConnectWalletStore } from 'features/ConnectWallet/store';
 import { ClaimAirdrop } from 'features/ClaimAirdrop/store';
 import { PublicMint } from 'features/PublicMint/store';
 import { WhitelistMint } from 'features/WhitelistMint/store';
+import { GetWhitelisted } from 'features/GetWhitelisted/store';
 
 import { ENVIRONMENT } from 'shared/constants/environment';
 
@@ -20,6 +21,7 @@ export type StoreContextValue = {
   claimAirdrop: ClaimAirdrop;
   publicMint: PublicMint;
   whitelistMint: WhitelistMint;
+  getWhitelisted: GetWhitelisted;
 };
 
 export const StoreContext = createContext<StoreContextValue | null>(null);
@@ -55,9 +57,12 @@ export const StoreProvider: FC<{ children: ReactNode }> = observer(({ children }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [bimkonEyes],
   );
+  const getWhitelisted = useMemo(() => new GetWhitelisted(), []);
 
   return (
-    <StoreContext.Provider value={{ connectWallet, showMintedNFTs, claimAirdrop, publicMint, whitelistMint }}>
+    <StoreContext.Provider
+      value={{ connectWallet, showMintedNFTs, claimAirdrop, publicMint, whitelistMint, getWhitelisted }}
+    >
       {children}
     </StoreContext.Provider>
   );

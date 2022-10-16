@@ -23,7 +23,7 @@ export const ConnectButton: FC<ConnectButtonProps> = ({ showAddress = false }) =
   };
 
   return (
-    <Button onClick={handleClick}>
+    <Button onClick={handleClick} uppercase={!isSsr && !address}>
       {address && !isSsr ? (showAddress ? trim(address, 4, 6) : 'Disconnect') : 'Connect'}
     </Button>
   );

@@ -1,0 +1,24 @@
+.form {
+  display: grid;
+
+  row-gap: 35px;
+
+  justify-items: center;
+
+  padding-top: 10px;
+}
+
+.send {
+  width: 100%;
+  max-width: 253px;
+}
+
+.sended {
+  display: grid;
+
+  row-gap: 20px;
+
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 29px;
+}

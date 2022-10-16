@@ -6,6 +6,7 @@ import { MintingLayout } from 'layouts/MintingLayout';
 import { useWhitelistMint } from 'features/WhitelistMint/hooks/useWhitelistMint';
 import { PresaleNFTsCounter } from 'features/WhitelistMint/containers/PresaleNFTsCounter';
 import { PresaleMintButton } from 'features/WhitelistMint/containers/PresaleMintButton';
+import { GetWhitelistedButton } from 'features/GetWhitelisted/containers/GetWhitelistedButton';
 
 import { DefinitionList } from 'shared/components/DefinitionList';
 import { Page } from 'shared/types/page';
@@ -40,11 +41,15 @@ export const Presale: Page = observer(() => {
         </>
       )}
       {isNotWhitelisted && (
-        <div className={styles['info']}>
-          <TextSection title="You’re not whitelisted yet :(">
-            To participate in Presale please send us an information about your project
-          </TextSection>
-        </div>
+        <>
+          <div className={styles['info']}>
+            <TextSection title="You’re not whitelisted yet :(">
+              To participate in Presale please send us an information about your project
+            </TextSection>
+          </div>
+
+          <GetWhitelistedButton type="presale" />
+        </>
       )}
       {isFinished && (
         <div className={styles['info']}>

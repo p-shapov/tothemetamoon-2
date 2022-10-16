@@ -7,20 +7,25 @@ import styles from './Modal.module.scss';
 
 export type ModalProps = {
   title: string;
+  description?: string;
   children: ReactNode;
   onClose?(): void;
 };
 
-export const Modal: FC<ModalProps> = ({ children, title, onClose = () => void 0 }) => {
+export const Modal: FC<ModalProps> = ({ children, title, description, onClose = () => void 0 }) => {
   return (
     <div className={styles['root']}>
       <div className={styles['content']}>
-        <div className={styles['header']}>
-          <span className={styles['title']}>{title}</span>
+        <div className={styles['info']}>
+          <div className={styles['header']}>
+            <span className={styles['title']}>{title}</span>
 
-          <IconButton label="Close modal" onClick={onClose}>
-            {ico_crossCircled}
-          </IconButton>
+            <IconButton label="Close modal" onClick={onClose}>
+              {ico_crossCircled}
+            </IconButton>
+          </div>
+
+          {description && <span className={styles['description']}>{description}</span>}
         </div>
 
         <div>{children}</div>

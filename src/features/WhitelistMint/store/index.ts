@@ -3,7 +3,7 @@ import { BigNumber } from 'ethers';
 
 import { BimkonEyes } from 'src/contracts';
 
-import { getPresaleProof } from 'api/controllers/presale';
+import { getProof } from 'api/controllers/proof';
 import { getEthRateInUsd } from 'api/controllers/eth';
 
 import { autoFetchable } from 'services/AutoFetchable';
@@ -14,6 +14,8 @@ import { SaleState } from 'shared/types/saleStatus';
 import { stateToPhase } from 'shared/utils/stateToPhase';
 import { formatToEth } from 'shared/utils/formatToEth';
 import { TransactionStatus } from 'shared/types/transactionStatus';
+
+const getPresaleProof = getProof.bind(null, 'presale');
 
 export class WhitelistMint {
   public mintStatus = fetchNothing<TransactionStatus>();
