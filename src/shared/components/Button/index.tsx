@@ -1,4 +1,4 @@
-import { FC, ReactElement, ReactNode } from 'react';
+import { FC, ReactElement } from 'react';
 import cn from 'classnames';
 import NextLink from 'next/link';
 
@@ -6,7 +6,7 @@ import styles from './Button.module.scss';
 
 export type ButtonProps = {
   to?: string;
-  children: ReactNode;
+  children: string;
   type?: 'button' | 'submit';
   size?: 'sm' | 'lg';
   icon?: ReactElement;
@@ -29,13 +29,11 @@ export const Button: FC<ButtonProps> = ({
   onClick = () => void 0,
   icon,
 }) => {
-  const className = cn(
-    styles['root'],
-    styles[`root--size_${size}`],
-    uppercase && styles['root--uppercase'],
-    stretch && styles['root--stretch'],
-    isLoading && styles['root--loading'],
-  );
+  const className = cn(styles['root'], styles[`root--size_${size}`], {
+    [styles['root--uppercase']]: uppercase,
+    [styles['root--stretch']]: stretch,
+    [styles['root--loading']]: isLoading,
+  });
 
   const inner = (
     <>

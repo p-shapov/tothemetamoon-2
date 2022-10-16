@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi';
 import { BaseLayout } from 'layouts/BaseLayout';
 
 import { ConnectButton } from 'features/ConnectWallet/containers/ConnectButton';
+import { GetWhitelistedButton } from 'features/GetWhitelisted/containers/GetWhitelistedButton';
 
 import { Button } from 'shared/components/Button';
 import { Image } from 'shared/components/Image';
@@ -38,8 +39,14 @@ export const Home: Page = () => {
         </p>
 
         <div className={styles['buttons']}>
-          <ConnectButton />
-          <Button>Get airdrop whitelisted</Button>
+          {isConnected ? (
+            <Button to={'/airdrop'} uppercase>
+              Start minting
+            </Button>
+          ) : (
+            <ConnectButton />
+          )}
+          <GetWhitelistedButton type="airdrop">Get airdrop whitelisted</GetWhitelistedButton>
         </div>
       </div>
 
