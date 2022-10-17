@@ -8,7 +8,7 @@ import { PresaleNFTsCounter } from 'features/WhitelistMint/containers/PresaleNFT
 import { PresaleMintButton } from 'features/WhitelistMint/containers/PresaleMintButton';
 import { GetWhitelistedButton } from 'features/GetWhitelisted/containers/GetWhitelistedButton';
 
-import { DefinitionList } from 'shared/components/DefinitionList';
+import { DefinitionList, Term } from 'shared/components/DefinitionList';
 import { Page } from 'shared/types/page';
 import { useBalancePair } from 'shared/hooks/useBalancePair';
 import { TextSection } from 'shared/components/TextSection';
@@ -62,13 +62,17 @@ export const Presale: Page = observer(() => {
         </div>
       )}
       {isSoon && (
-        <div className={styles['info']}>
-          <TextSection title="Private sale starts soon">
-            {`You can buy ut to ${
-              allowedToMint.value
-            } NFTs for the lowest price of ${price.value?.formatToEth()} per NFT`}
-          </TextSection>
-        </div>
+        <>
+          <div className={styles['info']}>
+            <TextSection title="Private sale starts soon">
+              {`You can buy ut to ${
+                allowedToMint.value
+              } NFTs for the lowest price of ${price.value?.formatToEth()} per NFT`}
+            </TextSection>
+          </div>
+
+          <Term title="Presale Price">{price.value?.format()}</Term>
+        </>
       )}
     </div>
   );

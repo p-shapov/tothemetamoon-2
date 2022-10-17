@@ -77,7 +77,8 @@
     stroke-dasharray: 10000;
     stroke-dashoffset: 10000;
 
-    animation: to-the-moon 4s ease 1s forwards;
+    animation: to-the-moon 4s ease 1s forwards,
+      to-the-moon-pulse 5s ease-in-out 1s infinite;
   }
 }
 
@@ -149,6 +150,20 @@
 @keyframes to-the-moon {
   to {
     stroke-dashoffset: 0;
+  }
+}
+
+@keyframes to-the-moon-pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.2;
+  }
+
+  100% {
+    opacity: 1;
   }
 }
 

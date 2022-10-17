@@ -6,8 +6,9 @@ import { MintingLayout } from 'layouts/MintingLayout';
 import { usePublicMint } from 'features/PublicMint/hooks/usePublicMint';
 import { SaleMintButton } from 'features/PublicMint/containers/SaleMintButton';
 import { SaleNFTsCounter } from 'features/PublicMint/containers/SaleNFTsCounter';
+import { SubscribeButton } from 'features/Subscribe/containers/SubscribeButton';
 
-import { DefinitionList } from 'shared/components/DefinitionList';
+import { DefinitionList, Term } from 'shared/components/DefinitionList';
 import { Page } from 'shared/types/page';
 import { useBalancePair } from 'shared/hooks/useBalancePair';
 import { TextSection } from 'shared/components/TextSection';
@@ -49,11 +50,17 @@ export const Sale: Page = observer(() => {
         </div>
       )}
       {isSoon && (
-        <div className={styles['info']}>
-          <TextSection title="Subscribe to our news!">
-            We’ll send you a notification when public sale is available to participate
-          </TextSection>
-        </div>
+        <>
+          <div className={styles['info']}>
+            <TextSection title="Subscribe to our news!">
+              We’ll send you a notification when public sale is available to participate
+            </TextSection>
+          </div>
+
+          <Term title="Public Price">{price.value?.format()}</Term>
+
+          <SubscribeButton />
+        </>
       )}
     </div>
   );

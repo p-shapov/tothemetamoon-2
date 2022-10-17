@@ -12,6 +12,7 @@ import { ClaimAirdrop } from 'features/ClaimAirdrop/store';
 import { PublicMint } from 'features/PublicMint/store';
 import { WhitelistMint } from 'features/WhitelistMint/store';
 import { GetWhitelisted } from 'features/GetWhitelisted/store';
+import { Subscribe } from 'features/Subscribe/store';
 
 import { ENVIRONMENT } from 'shared/constants/environment';
 
@@ -22,6 +23,7 @@ export type StoreContextValue = {
   publicMint: PublicMint;
   whitelistMint: WhitelistMint;
   getWhitelisted: GetWhitelisted;
+  subscribe: Subscribe;
 };
 
 export const StoreContext = createContext<StoreContextValue | null>(null);
@@ -58,10 +60,19 @@ export const StoreProvider: FC<{ children: ReactNode }> = observer(({ children }
     [bimkonEyes],
   );
   const getWhitelisted = useMemo(() => new GetWhitelisted(), []);
+  const subscribe = useMemo(() => new Subscribe(), []);
 
   return (
     <StoreContext.Provider
-      value={{ connectWallet, showMintedNFTs, claimAirdrop, publicMint, whitelistMint, getWhitelisted }}
+      value={{
+        connectWallet,
+        showMintedNFTs,
+        claimAirdrop,
+        publicMint,
+        whitelistMint,
+        getWhitelisted,
+        subscribe,
+      }}
     >
       {children}
     </StoreContext.Provider>
