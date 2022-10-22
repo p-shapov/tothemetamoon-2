@@ -1,5 +1,5 @@
 body {
-  @include ff-with-fallback(Montserrat);
+  @include ff-with-fallback('montserrat');
 
   min-height: 100vh;
 

@@ -1,0 +1,34 @@
+.root {
+  position: relative;
+
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    top: 100%;
+
+    width: 100%;
+    height: 20px;
+  }
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 14px);
+
+  display: grid;
+
+  width: max-content;
+
+  background-color: $accent;
+  border-radius: 10px;
+
+  &--justify_right {
+    right: 0;
+  }
+
+  &--justify_left {
+    left: 0;
+  }
+}

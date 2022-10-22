@@ -130,3 +130,13 @@
 @mixin column-gap($col-gap) {
   @include gap(0, $col-gap);
 }
+
+@mixin addFont($font-family, $file-name, $font-weight, $font-style) {
+  @font-face {
+    font-family: $font-family;
+    font-style: $font-style;
+    font-weight: $font-weight;
+    src: url('~public/fonts/#{$file-name}.woff2') format('woff2'),
+      url('~public/fonts/#{$file-name}.woff') format('woff');
+  }
+}

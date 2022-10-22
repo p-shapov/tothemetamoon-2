@@ -20,6 +20,8 @@ export const Home: Page = () => {
   const { isConnected } = useAccount();
   const isSsr = useSsr();
 
+  const isConnectedAndNotSsr = isConnected && !isSsr;
+
   return (
     <div className={styles['root']}>
       <div className={styles['layout']}>
@@ -39,7 +41,7 @@ export const Home: Page = () => {
         </p>
 
         <div className={styles['buttons']}>
-          {isConnected ? (
+          {isConnectedAndNotSsr ? (
             <Button to={'/airdrop'} uppercase>
               Start minting
             </Button>
@@ -50,7 +52,7 @@ export const Home: Page = () => {
         </div>
       </div>
 
-      {isConnected && !isSsr && <div className={styles['to-the-moon']}>{ico_toTheMoon}</div>}
+      {isConnectedAndNotSsr && <div className={styles['to-the-moon']}>{ico_toTheMoon}</div>}
 
       <div className={styles['orbit']}>
         <div className={styles['planet']} />
@@ -58,11 +60,11 @@ export const Home: Page = () => {
         <div
           className={cn(
             styles['spaceship'],
-            styles[`spaceship--${isConnected && !isSsr ? 'to-the-moon' : 'floating'}`],
+            styles[`spaceship--${isConnectedAndNotSsr ? 'to-the-moon' : 'floating'}`],
           )}
         >
           <Image alt="spaceship" src="images/spaceship.png" width={277} height={277} />
-          {isConnected && !isSsr && <div className={styles['rocket-flame']}>{ico_flame}</div>}
+          {isConnectedAndNotSsr && <div className={styles['rocket-flame']}>{ico_flame}</div>}
         </div>
       </div>
     </div>
