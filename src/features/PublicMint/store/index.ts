@@ -2,9 +2,9 @@ import { flow, makeAutoObservable, onBecomeObserved, onBecomeUnobserved, runInAc
 import { BigNumber } from 'ethers';
 import { arrayify } from 'ethers/lib/utils';
 
-import { BimkonEyes, SignatureChecker } from 'src/contracts';
-
 import { getEthRateInUsd } from 'api/controllers/eth';
+
+import { BimkonEyes, SignatureChecker } from 'contracts/index';
 
 import { autoFetchable } from 'services/AutoFetchable';
 import { fetchError, fetchLoading, fetchNothing, fetchSucceed } from 'services/AutoFetchable/utils';
@@ -22,24 +22,24 @@ export class PublicMint {
 
   public get isSoon() {
     return (
-      this.allowedToMintAutoFetchable.hasValue &&
-      this.phaseAutoFetchable.hasValue &&
+      this.allowedToMintAutoFetchable.isFetched &&
+      this.phaseAutoFetchable.isFetched &&
       this.phase.value === 'soon'
     );
   }
 
   public get isAllMinted() {
     return (
-      this.phaseAutoFetchable.hasValue &&
-      this.allowedToMintAutoFetchable.hasValue &&
+      this.phaseAutoFetchable.isFetched &&
+      this.allowedToMintAutoFetchable.isFetched &&
       this.allowedToMint.value === 0
     );
   }
 
   public get isFinished() {
     return (
-      this.allowedToMintAutoFetchable.hasValue &&
-      this.phaseAutoFetchable.hasValue &&
+      this.allowedToMintAutoFetchable.isFetched &&
+      this.phaseAutoFetchable.isFetched &&
       this.phase.value === 'finished' &&
       !this.isAllMinted
     );
@@ -47,8 +47,8 @@ export class PublicMint {
 
   public get isAvailable() {
     return (
-      this.allowedToMintAutoFetchable.hasValue &&
-      this.phaseAutoFetchable.hasValue &&
+      this.allowedToMintAutoFetchable.isFetched &&
+      this.phaseAutoFetchable.isFetched &&
       this.phase.value === 'available' &&
       !this.isAllMinted
     );

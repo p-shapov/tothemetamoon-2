@@ -1,7 +1,7 @@
 import { BigNumber } from 'ethers';
 import { flow, makeAutoObservable } from 'mobx';
 
-import { BimkonEyes } from 'src/contracts';
+import { BimkonEyes } from 'contracts/index';
 
 import { autoFetchable } from 'services/AutoFetchable';
 

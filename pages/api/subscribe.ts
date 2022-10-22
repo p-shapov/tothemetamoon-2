@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { Spreadsheets } from 'services/Spreadsheets';
 
+import { getErrorMessage } from 'shared/utils/getErrorMessage';
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method, body: email } = req;
 
@@ -25,11 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
   } catch (error) {
-    let message: string;
-
-    if (error instanceof Error) message = error.message;
-    else if (typeof error === 'string') message = error;
-    else message = 'Unknown error';
+    const message = getErrorMessage(error);
 
     return res.status(500).send(message);
   }

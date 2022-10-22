@@ -10,7 +10,7 @@ import { Wallets } from 'features/ConnectWallet/components/Wallets';
 import { ConnectorId } from 'services/WagmiClient/types';
 import { connectors } from 'services/WagmiClient/connectors';
 
-import { ENVIRONMENT } from 'shared/constants/environment';
+import { ENV } from 'shared/constants/env';
 
 export const ConnectModal: FC = observer(() => {
   const {
@@ -30,7 +30,7 @@ export const ConnectModal: FC = observer(() => {
 
     setTimeout(setConnectorId.bind(null, id));
     setModal(id);
-    connect({ connector, chainId: Number(ENVIRONMENT.PREFERRED_CHAIN_ID) });
+    connect({ connector, chainId: ENV.PREFERRED_CHAIN_ID });
   };
 
   const { connect, isLoading, error } = useConnect({

@@ -23,6 +23,11 @@
             "position": "before"
           },
           {
+            "pattern": "contracts/**",
+            "group": "parent",
+            "position": "before"
+          },
+          {
             "pattern": "features/**",
             "group": "parent",
             "position": "before"
@@ -52,7 +57,9 @@
         "newlines-between": "always"
       }
     ],
+    "import/named": ["off"],
     "import/no-unresolved": ["off"],
+    "import/no-restricted-imports": ["off"],
     "max-len": [
       "error",
       110,

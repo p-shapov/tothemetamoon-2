@@ -1,14 +1,9 @@
 import { google, sheets_v4 } from 'googleapis';
 
-import { ENVIRONMENT } from 'shared/constants/environment';
+import { ENV } from 'shared/constants/env';
 
 import { WhitelistType } from './types';
 import { spreadsheetRequestIds, spreadsheetSubscriptionsId, spreadsheetWhitelistIds } from './utils';
-
-const clientEmail = ENVIRONMENT.SPREADSHEET_CLIENT_EMAIL;
-const privateKey = ENVIRONMENT.SPREADSHEET_PRIVATE_KEY;
-const scopes = ['https://www.googleapis.com/auth/spreadsheets'];
-
 export class Spreadsheets {
   public readonly postSubscriptionRequest = (email: string) =>
     this.appendRow({
@@ -53,7 +48,12 @@ export class Spreadsheets {
 
   private readonly getGsapi = async () => {
     if (!this.gsapi) {
-      const client = await new google.auth.JWT(clientEmail, undefined, privateKey, scopes);
+      const client = await new google.auth.JWT(
+        ENV.SPREADSHEET_CLIENT_EMAIL,
+        undefined,
+        ENV.SPREADSHEET_PRIVATE_KEY,
+        ['https://www.googleapis.com/auth/spreadsheets'],
+      );
 
       await client.authorize();
 

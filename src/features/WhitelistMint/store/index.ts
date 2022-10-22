@@ -1,10 +1,10 @@
 import { flow, makeAutoObservable, onBecomeObserved, onBecomeUnobserved, runInAction } from 'mobx';
 import { BigNumber } from 'ethers';
 
-import { BimkonEyes } from 'src/contracts';
-
 import { getProof } from 'api/controllers/proof';
 import { getEthRateInUsd } from 'api/controllers/eth';
+
+import { BimkonEyes } from 'contracts/index';
 
 import { autoFetchable } from 'services/AutoFetchable';
 import { fetchError, fetchLoading, fetchNothing, fetchSucceed } from 'services/AutoFetchable/utils';
@@ -24,9 +24,9 @@ export class WhitelistMint {
 
   public get isSoon() {
     return (
-      this.phaseAutoFetchable.hasValue &&
-      this.allowedToMintAutoFetchable.hasValue &&
-      this.whitelistedAutoFetchable.hasValue &&
+      this.phaseAutoFetchable.isFetched &&
+      this.allowedToMintAutoFetchable.isFetched &&
+      this.whitelistedAutoFetchable.isFetched &&
       !!this.whitelisted.value &&
       this.phase.value === 'soon'
     );
@@ -34,9 +34,9 @@ export class WhitelistMint {
 
   public get isAllMinted() {
     return (
-      this.phaseAutoFetchable.hasValue &&
-      this.allowedToMintAutoFetchable.hasValue &&
-      this.whitelistedAutoFetchable.hasValue &&
+      this.phaseAutoFetchable.isFetched &&
+      this.allowedToMintAutoFetchable.isFetched &&
+      this.whitelistedAutoFetchable.isFetched &&
       !!this.whitelisted.value &&
       this.allowedToMint.value === 0
     );
@@ -44,9 +44,9 @@ export class WhitelistMint {
 
   public get isFinished() {
     return (
-      this.phaseAutoFetchable.hasValue &&
-      this.allowedToMintAutoFetchable.hasValue &&
-      this.whitelistedAutoFetchable.hasValue &&
+      this.phaseAutoFetchable.isFetched &&
+      this.allowedToMintAutoFetchable.isFetched &&
+      this.whitelistedAutoFetchable.isFetched &&
       this.phase.value === 'finished' &&
       !this.isAllMinted
     );
@@ -54,9 +54,9 @@ export class WhitelistMint {
 
   public get isAvailable() {
     return (
-      this.phaseAutoFetchable.hasValue &&
-      this.allowedToMintAutoFetchable.hasValue &&
-      this.whitelistedAutoFetchable.hasValue &&
+      this.phaseAutoFetchable.isFetched &&
+      this.allowedToMintAutoFetchable.isFetched &&
+      this.whitelistedAutoFetchable.isFetched &&
       !!this.whitelisted.value &&
       this.phase.value === 'available' &&
       !this.isAllMinted
@@ -65,9 +65,9 @@ export class WhitelistMint {
 
   public get isNotWhitelisted() {
     return (
-      this.phaseAutoFetchable.hasValue &&
-      this.allowedToMintAutoFetchable.hasValue &&
-      this.whitelistedAutoFetchable.hasValue &&
+      this.phaseAutoFetchable.isFetched &&
+      this.allowedToMintAutoFetchable.isFetched &&
+      this.whitelistedAutoFetchable.isFetched &&
       !this.whitelisted.value &&
       !this.isFinished
     );

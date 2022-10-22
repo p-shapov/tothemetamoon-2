@@ -8,13 +8,22 @@ export type InputProps = {
   label: string;
   children: string;
   isRequired?: boolean;
+  isValid?: boolean;
   onChange(value: string): void;
 };
 
-export const Input: FC<InputProps> = ({ type = 'text', children, onChange, isRequired, label }) => (
+export const Input: FC<InputProps> = ({
+  type = 'text',
+  children,
+  onChange,
+  isRequired,
+  isValid = true,
+  label,
+}) => (
   <label
     className={cn(styles['root'], {
       [styles['root--has-value']]: children.length > 0,
+      [styles['root--is-invalid']]: !isValid,
     })}
   >
     {type === 'text-area' ? (

@@ -15,16 +15,16 @@
     grid-column: 1;
   }
 
-  &:focus-within:not(.root--has-value) .label {
-    opacity: 0.5;
-  }
-
   &--has-value .label {
     padding: 0;
 
     font-size: 16px;
 
     transform: translateY(-100%);
+  }
+
+  &--is-invalid {
+    border-color: $error;
   }
 }
 

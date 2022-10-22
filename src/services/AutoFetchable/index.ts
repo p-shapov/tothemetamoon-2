@@ -20,7 +20,23 @@ export class AutoFetchable<T> {
     });
   };
 
-  public get hasValue() {
+  public get isNothing() {
+    return this.data.status === 'nothing';
+  }
+
+  public get isSucceed() {
+    return this.data.status === 'succeed';
+  }
+
+  public get isLoading() {
+    return this.data.status === 'loading';
+  }
+
+  public get isError() {
+    return this.data.status === 'error';
+  }
+
+  public get isFetched() {
     return this.data.value !== null;
   }
 

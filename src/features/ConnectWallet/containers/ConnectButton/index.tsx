@@ -7,6 +7,8 @@ import { Button } from 'shared/components/Button';
 import { trim } from 'shared/utils/trim';
 import { useSsr } from 'shared/hooks/useSsr';
 
+import { ConnectModal } from '../ConnectModal';
+
 export type ConnectButtonProps = {
   showAddress?: boolean;
 };
@@ -23,8 +25,12 @@ export const ConnectButton: FC<ConnectButtonProps> = ({ showAddress = false }) =
   };
 
   return (
-    <Button onClick={handleClick} uppercase={!isSsr && !showAddress}>
-      {address && !isSsr ? (showAddress ? trim(address, 4, 6) : 'Disconnect') : 'Connect'}
-    </Button>
+    <>
+      <Button onClick={handleClick} uppercase={!isSsr && !showAddress}>
+        {address && !isSsr ? (showAddress ? trim(address, 4, 6) : 'Disconnect') : 'Connect'}
+      </Button>
+
+      <ConnectModal />
+    </>
   );
 };

@@ -4,8 +4,6 @@ import { ReactElement } from 'react';
 import 'the-new-css-reset';
 import 'shared/styles/global.scss';
 
-import { ConnectModal } from 'features/ConnectWallet/containers/ConnectModal';
-
 import { WagmiClient } from 'services/WagmiClient';
 
 import { Page } from 'shared/types/page';
@@ -21,10 +19,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <WagmiClient>
-      <StoreProvider>
-        {getLayout(<Component {...pageProps} />, pageProps)}
-        <ConnectModal />
-      </StoreProvider>
+      <StoreProvider>{getLayout(<Component {...pageProps} />, pageProps)}</StoreProvider>
     </WagmiClient>
   );
 }

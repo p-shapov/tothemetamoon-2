@@ -1,9 +1,9 @@
 import { flow, makeAutoObservable, onBecomeObserved, onBecomeUnobserved, runInAction } from 'mobx';
 import { BigNumber } from 'ethers';
 
-import { BimkonEyes } from 'src/contracts';
-
 import { getProof } from 'api/controllers/proof';
+
+import { BimkonEyes } from 'contracts/index';
 
 import { autoFetchable } from 'services/AutoFetchable';
 import { fetchError, fetchLoading, fetchNothing, fetchSucceed } from 'services/AutoFetchable/utils';
@@ -19,9 +19,9 @@ export class ClaimAirdrop {
 
   public get isSoon() {
     return (
-      this.allowedToClaimAutoFetchable.hasValue &&
-      this.phaseAutoFetchable.hasValue &&
-      this.whitelistedAutoFetchable.hasValue &&
+      this.allowedToClaimAutoFetchable.isFetched &&
+      this.phaseAutoFetchable.isFetched &&
+      this.whitelistedAutoFetchable.isFetched &&
       !!this.whitelisted.value &&
       this.phase.value === 'soon'
     );
@@ -29,23 +29,29 @@ export class ClaimAirdrop {
 
   public get isClaimed() {
     return (
-      this.allowedToClaimAutoFetchable.hasValue &&
-      this.phaseAutoFetchable.hasValue &&
-      this.whitelistedAutoFetchable.hasValue &&
+      this.allowedToClaimAutoFetchable.isFetched &&
+      this.phaseAutoFetchable.isFetched &&
+      this.whitelistedAutoFetchable.isFetched &&
       !!this.whitelisted.value &&
       this.allowedToClaim.value === 0
     );
   }
 
   public get isFinished() {
-    return this.phaseAutoFetchable.hasValue && this.phase.value === 'finished' && !this.isClaimed;
+    return (
+      this.allowedToClaimAutoFetchable.isFetched &&
+      this.phaseAutoFetchable.isFetched &&
+      this.whitelistedAutoFetchable.isFetched &&
+      this.phase.value === 'finished' &&
+      !this.isClaimed
+    );
   }
 
   public get isAvailable() {
     return (
-      this.allowedToClaimAutoFetchable.hasValue &&
-      this.phaseAutoFetchable.hasValue &&
-      this.whitelistedAutoFetchable.hasValue &&
+      this.allowedToClaimAutoFetchable.isFetched &&
+      this.phaseAutoFetchable.isFetched &&
+      this.whitelistedAutoFetchable.isFetched &&
       !!this.whitelisted.value &&
       this.phase.value === 'available' &&
       !this.isClaimed
@@ -54,9 +60,9 @@ export class ClaimAirdrop {
 
   public get isNotWhitelisted() {
     return (
-      this.allowedToClaimAutoFetchable.hasValue &&
-      this.phaseAutoFetchable.hasValue &&
-      this.whitelistedAutoFetchable.hasValue &&
+      this.allowedToClaimAutoFetchable.isFetched &&
+      this.phaseAutoFetchable.isFetched &&
+      this.whitelistedAutoFetchable.isFetched &&
       !this.whitelisted.value &&
       !this.isFinished
     );

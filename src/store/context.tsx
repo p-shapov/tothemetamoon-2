@@ -2,9 +2,7 @@ import { createContext, FC, ReactNode, useMemo } from 'react';
 import { useAccount, useContract, useSigner } from 'wagmi';
 import { observer } from 'mobx-react-lite';
 
-import { BimkonEyes, SignatureChecker } from 'src/contracts';
-import bimkonEyesABI from 'public/abis/bimkonEyes.json';
-import signatureCheckerABI from 'public/abis/signatureChecker.json';
+import { BimkonEyes, SignatureChecker } from 'contracts/index';
 
 import { ShowMintedNFTs } from 'features/ShowMintedNFTs/store';
 import { ConnectWalletStore } from 'features/ConnectWallet/store';
@@ -14,7 +12,8 @@ import { WhitelistMint } from 'features/WhitelistMint/store';
 import { GetWhitelisted } from 'features/GetWhitelisted/store';
 import { Subscribe } from 'features/Subscribe/store';
 
-import { ENVIRONMENT } from 'shared/constants/environment';
+import { ENV } from 'shared/constants/env';
+import { ABI } from 'shared/constants/abi';
 
 export type StoreContextValue = {
   connectWallet: ConnectWalletStore;
@@ -32,13 +31,13 @@ export const StoreProvider: FC<{ children: ReactNode }> = observer(({ children }
   const { data: signer } = useSigner();
   const { address } = useAccount();
   const bimkonEyes = useContract<BimkonEyes>({
-    addressOrName: ENVIRONMENT.BIMKON_EYES_ADDRESS || '',
-    contractInterface: bimkonEyesABI,
+    addressOrName: ENV.BIMKON_EYES_ADDRESS,
+    contractInterface: ABI.BIMKON_EYES,
     signerOrProvider: signer,
   });
   const signatureChecker = useContract<SignatureChecker>({
-    addressOrName: ENVIRONMENT.SIGNATURE_CHECKER_ADDRESS || '',
-    contractInterface: signatureCheckerABI,
+    addressOrName: ENV.SIGNATURE_CHECKER_ADDRESS,
+    contractInterface: ABI.SIGNATURE_CHECKER,
     signerOrProvider: signer,
   });
 

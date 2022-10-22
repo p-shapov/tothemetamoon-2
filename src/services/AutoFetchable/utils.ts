@@ -1,3 +1,5 @@
+import { getErrorMessage } from 'shared/utils/getErrorMessage';
+
 import { FetchData } from './types';
 
 export const fetchNothing = <T>(): FetchData<T> => ({
@@ -15,16 +17,8 @@ export const fetchSucceed = <T>(value: T): FetchData<T> => ({
   status: 'succeed',
 });
 
-export const fetchError = <T>(error: unknown, value: T | null): FetchData<T> => {
-  let _error: string;
-
-  if (error instanceof Error) _error = error.message;
-  else if (typeof error === 'string') _error = error;
-  else _error = 'Unknown error';
-
-  return {
-    value,
-    status: 'error',
-    error: _error,
-  };
-};
+export const fetchError = <T>(error: unknown, value: T | null): FetchData<T> => ({
+  value,
+  status: 'error',
+  error: getErrorMessage(error),
+});
