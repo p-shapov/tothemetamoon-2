@@ -89,11 +89,11 @@ export class PublicMint {
           value: price.mul(this.amountToMint),
         });
 
-        await transaction.wait();
-
         runInAction(() => {
           this.mintStatus = fetchSucceed('pending');
         });
+
+        await transaction.wait();
 
         this.setAmountToMint(1);
 
