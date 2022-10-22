@@ -13,37 +13,42 @@ import { Page } from 'shared/types/page';
 import styles from './Airdrop.module.scss';
 
 export const Airdrop: Page = observer(() => {
-  const { isAvailable, isClaimed, isFinished, isSoon, isNotWhitelisted, allowedToClaim } = useClaimAirdrop();
+  const { isAvailable, isClaimed, isFinished, isSoon, isNotWhitelisted, allowedToClaim, isFetched } =
+    useClaimAirdrop();
 
   return (
     <div className={styles['root']}>
-      {isAvailable && (
+      {isFetched && (
         <>
-          <TextSection title="Congratulations!">
-            Your wallet has been whitelisted! Claim your NFT now!
-          </TextSection>
+          {isAvailable && (
+            <>
+              <TextSection title="Congratulations!">
+                Your wallet has been whitelisted! Claim your NFT now!
+              </TextSection>
 
-          <ClaimAirdropButton />
+              <ClaimAirdropButton />
+            </>
+          )}
+
+          {isNotWhitelisted && (
+            <>
+              <TextSection title="You’re not whitelisted yet :(">
+                To participate in AirDrop please send us an information about your project
+              </TextSection>
+
+              <GetWhitelistedButton type="airdrop" />
+            </>
+          )}
+
+          {isSoon && allowedToClaim.value && (
+            <TextSection title="Airdrop starts soon!">{`You can claim ${allowedToClaim.value} NFTs for free!`}</TextSection>
+          )}
+
+          {isFinished && <TextSection title="Airdrop is over!" />}
+
+          {isClaimed && <TextSection title="You claimed your NFTs!" />}
         </>
       )}
-
-      {isNotWhitelisted && (
-        <>
-          <TextSection title="You’re not whitelisted yet :(">
-            To participate in AirDrop please send us an information about your project
-          </TextSection>
-
-          <GetWhitelistedButton type="airdrop" />
-        </>
-      )}
-
-      {isSoon && allowedToClaim.value && (
-        <TextSection title="Airdrop starts soon!">{`You can claim ${allowedToClaim.value} NFTs for free!`}</TextSection>
-      )}
-
-      {isFinished && <TextSection title="Airdrop is over!" />}
-
-      {isClaimed && <TextSection title="You claimed your NFTs!" />}
     </div>
   );
 });

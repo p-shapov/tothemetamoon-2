@@ -7,6 +7,7 @@ import { useWhitelistMint } from 'features/WhitelistMint/hooks/useWhitelistMint'
 import { PresaleNFTsCounter } from 'features/WhitelistMint/containers/PresaleNFTsCounter';
 import { PresaleMintButton } from 'features/WhitelistMint/containers/PresaleMintButton';
 import { GetWhitelistedButton } from 'features/GetWhitelisted/containers/GetWhitelistedButton';
+import { GetEthButton } from 'features/GetEth/containers/GetEthButton';
 
 import { DefinitionList, Term } from 'shared/components/DefinitionList';
 import { Page } from 'shared/types/page';
@@ -17,61 +18,80 @@ import styles from './Presale.module.scss';
 
 export const Presale: Page = observer(() => {
   const balancePair = useBalancePair();
-  const { totalCost, price, isAvailable, isAllMinted, isFinished, isNotWhitelisted, isSoon, allowedToMint } =
-    useWhitelistMint();
+  const {
+    totalCost,
+    price,
+    isAvailable,
+    isAllMinted,
+    isFinished,
+    isNotWhitelisted,
+    isSoon,
+    isFetched,
+    allowedToMint,
+  } = useWhitelistMint();
+
+  const isInsufficientBalance = !!balancePair && !!totalCost && totalCost.gt(balancePair);
 
   return (
     <div className={styles['root']}>
-      {isAvailable && (
+      {isFetched && (
         <>
-          <div className={styles['info']}>
-            <TextSection title="Be an early bird!">
-              Choose the amount of tokens you want to buy and make a payment in any token.
-            </TextSection>
-          </div>
-          <DefinitionList
-            items={[
-              { title: 'Your balance', element: balancePair?.format() },
-              { title: 'Presale Price', element: price.value?.format() },
-              { title: 'Amount of NFT', element: <PresaleNFTsCounter /> },
-              { title: 'Total Cost', element: totalCost?.format() },
-            ]}
-          />
-          <PresaleMintButton />
-        </>
-      )}
-      {isNotWhitelisted && (
-        <>
-          <div className={styles['info']}>
-            <TextSection title="You’re not whitelisted yet :(">
-              To participate in Presale please send us an information about your project
-            </TextSection>
-          </div>
+          {isAvailable && (
+            <>
+              <div className={styles['info']}>
+                <TextSection title="Be an early bird!">
+                  Choose the amount of tokens you want to buy and make a payment in any token.
+                </TextSection>
+              </div>
 
-          <GetWhitelistedButton type="presale" />
-        </>
-      )}
-      {isFinished && (
-        <div className={styles['info']}>
-          <TextSection title="Private sale is over!">You can buy NFTs on public sale.</TextSection>
-        </div>
-      )}
-      {isAllMinted && (
-        <div className={styles['info']}>
-          <TextSection title="You minted all allowed NFT!">See ya on public sale!</TextSection>
-        </div>
-      )}
-      {isSoon && (
-        <>
-          <div className={styles['info']}>
-            <TextSection title="Private sale starts soon">
-              {`You can buy ut to ${
-                allowedToMint.value
-              } NFTs for the lowest price of ${price.value?.formatToEth()} per NFT`}
-            </TextSection>
-          </div>
+              <DefinitionList
+                items={[
+                  { title: 'Your balance', element: balancePair?.format() },
+                  { title: 'Presale Price', element: price.value?.format() },
+                  { title: 'Amount of NFT', element: <PresaleNFTsCounter /> },
+                  { title: 'Total Cost', element: totalCost?.format() },
+                ]}
+              />
 
-          <Term title="Presale Price">{price.value?.format()}</Term>
+              {isInsufficientBalance ? <GetEthButton /> : <PresaleMintButton />}
+
+              {isInsufficientBalance && <span>You have not enough ETH for mint.</span>}
+            </>
+          )}
+          {isNotWhitelisted && (
+            <>
+              <div className={styles['info']}>
+                <TextSection title="You’re not whitelisted yet :(">
+                  To participate in Presale please send us an information about your project
+                </TextSection>
+              </div>
+
+              <GetWhitelistedButton type="presale" />
+            </>
+          )}
+          {isFinished && (
+            <div className={styles['info']}>
+              <TextSection title="Private sale is over!">You can buy NFTs on public sale.</TextSection>
+            </div>
+          )}
+          {isAllMinted && (
+            <div className={styles['info']}>
+              <TextSection title="You minted all allowed NFT!">See ya on public sale!</TextSection>
+            </div>
+          )}
+          {isSoon && (
+            <>
+              <div className={styles['info']}>
+                <TextSection title="Private sale starts soon">
+                  {`You can buy ut to ${
+                    allowedToMint.value
+                  } NFTs for the lowest price of ${price.value?.formatToEth()} per NFT`}
+                </TextSection>
+              </div>
+
+              <Term title="Presale Price">{price.value?.format()}</Term>
+            </>
+          )}
         </>
       )}
     </div>

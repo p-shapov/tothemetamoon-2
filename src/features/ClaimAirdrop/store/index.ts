@@ -17,55 +17,32 @@ const getAirdropProof = getProof.bind(null, 'airdrop');
 export class ClaimAirdrop {
   public claimStatus = fetchNothing<TransactionStatus>();
 
-  public get isSoon() {
+  public get isFetched() {
     return (
       this.allowedToClaimAutoFetchable.isFetched &&
       this.phaseAutoFetchable.isFetched &&
-      this.whitelistedAutoFetchable.isFetched &&
-      !!this.whitelisted.value &&
-      this.phase.value === 'soon'
+      this.whitelistedAutoFetchable.isFetched
     );
+  }
+
+  public get isSoon() {
+    return !!this.whitelisted.value && this.phase.value === 'soon';
   }
 
   public get isClaimed() {
-    return (
-      this.allowedToClaimAutoFetchable.isFetched &&
-      this.phaseAutoFetchable.isFetched &&
-      this.whitelistedAutoFetchable.isFetched &&
-      !!this.whitelisted.value &&
-      this.allowedToClaim.value === 0
-    );
+    return !!this.whitelisted.value && this.allowedToClaim.value === 0;
   }
 
   public get isFinished() {
-    return (
-      this.allowedToClaimAutoFetchable.isFetched &&
-      this.phaseAutoFetchable.isFetched &&
-      this.whitelistedAutoFetchable.isFetched &&
-      this.phase.value === 'finished' &&
-      !this.isClaimed
-    );
+    return this.phase.value === 'finished' && !this.isClaimed;
   }
 
   public get isAvailable() {
-    return (
-      this.allowedToClaimAutoFetchable.isFetched &&
-      this.phaseAutoFetchable.isFetched &&
-      this.whitelistedAutoFetchable.isFetched &&
-      !!this.whitelisted.value &&
-      this.phase.value === 'available' &&
-      !this.isClaimed
-    );
+    return !!this.whitelisted.value && this.phase.value === 'available' && !this.isClaimed;
   }
 
   public get isNotWhitelisted() {
-    return (
-      this.allowedToClaimAutoFetchable.isFetched &&
-      this.phaseAutoFetchable.isFetched &&
-      this.whitelistedAutoFetchable.isFetched &&
-      !this.whitelisted.value &&
-      !this.isFinished
-    );
+    return !this.whitelisted.value && !this.isFinished;
   }
 
   public get phase() {
@@ -131,11 +108,9 @@ export class ClaimAirdrop {
     const bimkonEyes = this.bimkonEyes;
 
     return flow(function* () {
-      const state = yield bimkonEyes.airDrop();
+      const state: SaleState = yield bimkonEyes.airDrop();
 
-      if (state === 0 || state === 1 || state === 2) return stateToPhase(state);
-
-      throw new Error('Airdrop state fetch error');
+      return stateToPhase(state);
     });
   }
 
@@ -145,12 +120,10 @@ export class ClaimAirdrop {
 
     return flow(function* () {
       if (address) {
-        const proof = yield getAirdropProof(address);
-        const whitelisted = yield bimkonEyes.canClaimAirDrop(proof, address);
+        const proof: Array<string> = yield getAirdropProof(address);
+        const whitelisted: boolean = yield bimkonEyes.canClaimAirDrop(proof, address);
 
-        if (typeof whitelisted === 'boolean') return whitelisted;
-
-        throw new Error('Airdrop whitelisted fetch error');
+        return whitelisted;
       }
 
       return false;

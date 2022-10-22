@@ -11,6 +11,7 @@ import { PublicMint } from 'features/PublicMint/store';
 import { WhitelistMint } from 'features/WhitelistMint/store';
 import { GetWhitelisted } from 'features/GetWhitelisted/store';
 import { Subscribe } from 'features/Subscribe/store';
+import { GetEthStore } from 'features/GetEth/store';
 
 import { ENV } from 'shared/constants/env';
 import { ABI } from 'shared/constants/abi';
@@ -23,6 +24,7 @@ export type StoreContextValue = {
   whitelistMint: WhitelistMint;
   getWhitelisted: GetWhitelisted;
   subscribe: Subscribe;
+  getEth: GetEthStore;
 };
 
 export const StoreContext = createContext<StoreContextValue | null>(null);
@@ -60,6 +62,7 @@ export const StoreProvider: FC<{ children: ReactNode }> = observer(({ children }
   );
   const getWhitelisted = useMemo(() => new GetWhitelisted(), []);
   const subscribe = useMemo(() => new Subscribe(), []);
+  const getEth = useMemo(() => new GetEthStore(), []);
 
   return (
     <StoreContext.Provider
@@ -71,6 +74,7 @@ export const StoreProvider: FC<{ children: ReactNode }> = observer(({ children }
         whitelistMint,
         getWhitelisted,
         subscribe,
+        getEth,
       }}
     >
       {children}

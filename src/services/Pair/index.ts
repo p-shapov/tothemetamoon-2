@@ -11,6 +11,16 @@ export class Pair {
 
   public readonly div = (x: Pair) => new Pair(this.eth / x.eth, this.rate);
 
+  public readonly eq = (x: Pair) => this.eth === x.eth;
+
+  public readonly gte = (x: Pair) => this.eth >= x.eth;
+
+  public readonly lte = (x: Pair) => this.eth <= x.eth;
+
+  public readonly gt = (x: Pair) => this.eth > x.eth;
+
+  public readonly lt = (x: Pair) => this.eth < x.eth;
+
   public readonly formatToEth = () => `${toFixed(this.eth, 3)} ETH`;
 
   public readonly formatToUsd = () => `$${toFixed(this.usd)}`;

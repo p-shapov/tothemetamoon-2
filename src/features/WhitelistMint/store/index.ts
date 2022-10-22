@@ -22,55 +22,32 @@ export class WhitelistMint {
 
   public amountToMint = 1;
 
-  public get isSoon() {
+  public get isFetched() {
     return (
       this.phaseAutoFetchable.isFetched &&
       this.allowedToMintAutoFetchable.isFetched &&
-      this.whitelistedAutoFetchable.isFetched &&
-      !!this.whitelisted.value &&
-      this.phase.value === 'soon'
+      this.whitelistedAutoFetchable.isFetched
     );
+  }
+
+  public get isSoon() {
+    return !!this.whitelisted.value && this.phase.value === 'soon';
   }
 
   public get isAllMinted() {
-    return (
-      this.phaseAutoFetchable.isFetched &&
-      this.allowedToMintAutoFetchable.isFetched &&
-      this.whitelistedAutoFetchable.isFetched &&
-      !!this.whitelisted.value &&
-      this.allowedToMint.value === 0
-    );
+    return !!this.whitelisted.value && this.allowedToMint.value === 0;
   }
 
   public get isFinished() {
-    return (
-      this.phaseAutoFetchable.isFetched &&
-      this.allowedToMintAutoFetchable.isFetched &&
-      this.whitelistedAutoFetchable.isFetched &&
-      this.phase.value === 'finished' &&
-      !this.isAllMinted
-    );
+    return this.phase.value === 'finished' && !this.isAllMinted;
   }
 
   public get isAvailable() {
-    return (
-      this.phaseAutoFetchable.isFetched &&
-      this.allowedToMintAutoFetchable.isFetched &&
-      this.whitelistedAutoFetchable.isFetched &&
-      !!this.whitelisted.value &&
-      this.phase.value === 'available' &&
-      !this.isAllMinted
-    );
+    return !!this.whitelisted.value && this.phase.value === 'available' && !this.isAllMinted;
   }
 
   public get isNotWhitelisted() {
-    return (
-      this.phaseAutoFetchable.isFetched &&
-      this.allowedToMintAutoFetchable.isFetched &&
-      this.whitelistedAutoFetchable.isFetched &&
-      !this.whitelisted.value &&
-      !this.isFinished
-    );
+    return !this.whitelisted.value && !this.isFinished;
   }
 
   public get price() {
@@ -179,16 +156,11 @@ export class WhitelistMint {
     const bimkonEyes = this.bimkonEyes;
 
     return flow(function* () {
-      const bigNumber = yield bimkonEyes.whiteListSalePrice();
+      const bigNumber: BigNumber = yield bimkonEyes.whiteListSalePrice();
+      const eth = formatToEth(bigNumber);
+      const rate: number = yield getEthRateInUsd();
 
-      if (bigNumber instanceof BigNumber) {
-        const eth = formatToEth(bigNumber);
-        const rate = yield getEthRateInUsd();
-
-        return new Pair(eth, rate);
-      }
-
-      throw new Error('Presale state fetch error');
+      return new Pair(eth, rate);
     });
   }
 
@@ -196,11 +168,9 @@ export class WhitelistMint {
     const bimkonEyes = this.bimkonEyes;
 
     return flow(function* () {
-      const state = yield bimkonEyes.whiteListSale();
+      const state: SaleState = yield bimkonEyes.whiteListSale();
 
-      if (state === 0 || state === 1 || state === 2) return stateToPhase(state);
-
-      throw new Error('Presale state fetch error');
+      return stateToPhase(state);
     });
   }
 
@@ -210,12 +180,10 @@ export class WhitelistMint {
 
     return flow(function* () {
       if (address) {
-        const proof = yield getPresaleProof(address);
-        const whitelisted = yield bimkonEyes.isWhiteListed(proof, address);
+        const proof: Array<string> = yield getPresaleProof(address);
+        const whitelisted: boolean = yield bimkonEyes.isWhiteListed(proof, address);
 
-        if (typeof whitelisted === 'boolean') return whitelisted;
-
-        throw new Error('Presale whitelisted fetch error');
+        return whitelisted;
       }
 
       return false;

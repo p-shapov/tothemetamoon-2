@@ -7,6 +7,7 @@ import { usePublicMint } from 'features/PublicMint/hooks/usePublicMint';
 import { SaleMintButton } from 'features/PublicMint/containers/SaleMintButton';
 import { SaleNFTsCounter } from 'features/PublicMint/containers/SaleNFTsCounter';
 import { SubscribeButton } from 'features/Subscribe/containers/SubscribeButton';
+import { GetEthButton } from 'features/GetEth/containers/GetEthButton';
 
 import { DefinitionList, Term } from 'shared/components/DefinitionList';
 import { Page } from 'shared/types/page';
@@ -17,49 +18,59 @@ import styles from './Sale.module.scss';
 
 export const Sale: Page = observer(() => {
   const balancePair = useBalancePair();
-  const { totalCost, price, isAvailable, isAllMinted, isFinished, isSoon } = usePublicMint();
+  const { totalCost, price, isAvailable, isAllMinted, isFinished, isSoon, isFetched } = usePublicMint();
+
+  const isInsufficientBalance = !!balancePair && !!totalCost && totalCost.gt(balancePair);
 
   return (
     <div className={styles['root']}>
-      {isAvailable && (
+      {isFetched && (
         <>
-          <div className={styles['info']}>
-            <TextSection title="Mint NFTs now!">
-              You can mint an unlimited amount of NFTs for the market price
-            </TextSection>
-          </div>
-          <DefinitionList
-            items={[
-              { title: 'Your balance', element: balancePair?.format() },
-              { title: 'Presale Price', element: price.value?.format() },
-              { title: 'Amount of NFT', element: <SaleNFTsCounter /> },
-              { title: 'Total Cost', element: totalCost?.format() },
-            ]}
-          />
-          <SaleMintButton />
-        </>
-      )}
-      {isFinished && (
-        <div className={styles['info']}>
-          <TextSection title="Public sale is over!">See ya next time :)</TextSection>
-        </div>
-      )}
-      {isAllMinted && (
-        <div className={styles['info']}>
-          <TextSection title="You minted all allowed NFT!">Thank you for your participation!</TextSection>
-        </div>
-      )}
-      {isSoon && (
-        <>
-          <div className={styles['info']}>
-            <TextSection title="Subscribe to our news!">
-              We’ll send you a notification when public sale is available to participate
-            </TextSection>
-          </div>
+          {isAvailable && (
+            <>
+              <div className={styles['info']}>
+                <TextSection title="Mint NFTs now!">
+                  You can mint an unlimited amount of NFTs for the market price
+                </TextSection>
+              </div>
 
-          <Term title="Public Price">{price.value?.format()}</Term>
+              <DefinitionList
+                items={[
+                  { title: 'Your balance', element: balancePair?.format() },
+                  { title: 'Presale Price', element: price.value?.format() },
+                  { title: 'Amount of NFT', element: <SaleNFTsCounter /> },
+                  { title: 'Total Cost', element: totalCost?.format() },
+                ]}
+              />
 
-          <SubscribeButton />
+              {isInsufficientBalance ? <GetEthButton /> : <SaleMintButton />}
+
+              {isInsufficientBalance && <span>You have not enough ETH for mint.</span>}
+            </>
+          )}
+          {isFinished && (
+            <div className={styles['info']}>
+              <TextSection title="Public sale is over!">See ya next time :)</TextSection>
+            </div>
+          )}
+          {isAllMinted && (
+            <div className={styles['info']}>
+              <TextSection title="You minted all allowed NFT!">Thank you for your participation!</TextSection>
+            </div>
+          )}
+          {isSoon && (
+            <>
+              <div className={styles['info']}>
+                <TextSection title="Subscribe to our news!">
+                  We’ll send you a notification when public sale is available to participate
+                </TextSection>
+              </div>
+
+              <Term title="Public Price">{price.value?.format()}</Term>
+
+              <SubscribeButton />
+            </>
+          )}
         </>
       )}
     </div>

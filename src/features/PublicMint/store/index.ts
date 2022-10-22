@@ -20,38 +20,24 @@ export class PublicMint {
 
   public amountToMint = 1;
 
+  public get isFetched() {
+    return this.allowedToMintAutoFetchable.isFetched && this.phaseAutoFetchable.isFetched;
+  }
+
   public get isSoon() {
-    return (
-      this.allowedToMintAutoFetchable.isFetched &&
-      this.phaseAutoFetchable.isFetched &&
-      this.phase.value === 'soon'
-    );
+    return this.phase.value === 'soon';
   }
 
   public get isAllMinted() {
-    return (
-      this.phaseAutoFetchable.isFetched &&
-      this.allowedToMintAutoFetchable.isFetched &&
-      this.allowedToMint.value === 0
-    );
+    return this.allowedToMint.value === 0;
   }
 
   public get isFinished() {
-    return (
-      this.allowedToMintAutoFetchable.isFetched &&
-      this.phaseAutoFetchable.isFetched &&
-      this.phase.value === 'finished' &&
-      !this.isAllMinted
-    );
+    return this.phase.value === 'finished' && !this.isAllMinted;
   }
 
   public get isAvailable() {
-    return (
-      this.allowedToMintAutoFetchable.isFetched &&
-      this.phaseAutoFetchable.isFetched &&
-      this.phase.value === 'available' &&
-      !this.isAllMinted
-    );
+    return this.phase.value === 'available' && !this.isAllMinted;
   }
 
   public get price() {
@@ -157,16 +143,11 @@ export class PublicMint {
     const bimkonEyes = this.bimkonEyes;
 
     return flow(function* () {
-      const bigNumber = yield bimkonEyes.publicSalePrice();
+      const bigNumber: BigNumber = yield bimkonEyes.publicSalePrice();
+      const eth = formatToEth(bigNumber);
+      const rate: number = yield getEthRateInUsd();
 
-      if (bigNumber instanceof BigNumber) {
-        const eth = formatToEth(bigNumber);
-        const rate = yield getEthRateInUsd();
-
-        return new Pair(eth, rate);
-      }
-
-      throw new Error('Presale state fetch error');
+      return new Pair(eth, rate);
     });
   }
 
@@ -174,11 +155,9 @@ export class PublicMint {
     const bimkonEyes = this.bimkonEyes;
 
     return flow(function* () {
-      const state = yield bimkonEyes.publicSale();
+      const state: SaleState = yield bimkonEyes.publicSale();
 
-      if (state === 0 || state === 1 || state === 2) return stateToPhase(state);
-
-      throw new Error('Presale state fetch error');
+      return stateToPhase(state);
     });
   }
 

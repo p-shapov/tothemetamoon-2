@@ -6,6 +6,10 @@ import { BimkonEyes } from 'contracts/index';
 import { autoFetchable } from 'services/AutoFetchable';
 
 export class ShowMintedNFTs {
+  public get isRevealed() {
+    return this.isRevealedAutoFetchable.data;
+  }
+
   public get totalSupply() {
     return this.totalSupplyAutoFetchable.data;
   }
@@ -18,6 +22,10 @@ export class ShowMintedNFTs {
     makeAutoObservable(this);
   }
 
+  private readonly isRevealedAutoFetchable = autoFetchable({
+    fetch: () => this.fetchIsRevealed,
+  });
+
   private readonly totalSupplyAutoFetchable = autoFetchable({
     fetch: () => this.fetchTotalSupply,
     deps: this.totalSupplyDeps,
@@ -27,15 +35,23 @@ export class ShowMintedNFTs {
     fetch: () => this.fetchMaxSupply,
   });
 
+  private get fetchIsRevealed() {
+    const contract = this.bimkonEyes;
+
+    return flow(function* () {
+      const isRevealed: boolean = yield contract.isRevealed();
+
+      return isRevealed;
+    });
+  }
+
   private get fetchTotalSupply() {
     const contract = this.bimkonEyes;
 
     return flow(function* () {
-      const bigNumber = yield contract.totalSupply();
+      const bigNumber: BigNumber = yield contract.totalSupply();
 
-      if (bigNumber instanceof BigNumber) return bigNumber.toNumber();
-
-      throw new Error('Max supply fetch error');
+      return bigNumber.toNumber();
     });
   }
 
@@ -43,11 +59,9 @@ export class ShowMintedNFTs {
     const contract = this.bimkonEyes;
 
     return flow(function* () {
-      const bigNumber = yield contract.MAX_SUPPLY();
+      const bigNumber: BigNumber = yield contract.MAX_SUPPLY();
 
-      if (bigNumber instanceof BigNumber) return bigNumber.toNumber();
-
-      throw new Error('Max supply fetch error');
+      return bigNumber.toNumber();
     });
   }
 }

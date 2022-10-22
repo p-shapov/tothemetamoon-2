@@ -17,6 +17,8 @@
 .content {
   display: grid;
 
+  grid-template-columns: 1fr max-content;
+
   min-width: max-content;
   margin: 0 71px 0 267px;
 }
