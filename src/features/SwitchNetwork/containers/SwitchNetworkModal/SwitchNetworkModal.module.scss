@@ -1,0 +1,20 @@
+.root {
+  display: grid;
+
+  row-gap: 33px;
+}
+
+.text {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 29px;
+}
+
+.button {
+  justify-self: center;
+
+  width: 100%;
+  max-width: 383px;
+
+  margin-top: 25px;
+}
