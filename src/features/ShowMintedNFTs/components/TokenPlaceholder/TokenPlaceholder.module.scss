@@ -1,13 +1,10 @@
 .root {
+  display: grid;
+
+  width: max-content;
   height: max-content;
   overflow: hidden;
 
+  background: $skeleton;
   border-radius: 20px;
-}
-
-.mock {
-  width: 100%;
-  height: 100%;
-
-  background-color: $skeleton;
 }

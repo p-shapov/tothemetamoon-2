@@ -6,7 +6,8 @@ import { useInView } from 'react-intersection-observer';
 import styles from './Image.module.scss';
 
 export type ImageProps = {
-  src: `images/${string}`;
+  src?: `images/${string}`;
+  extSrc?: string;
   alt?: string;
   lazy?: boolean;
   timeout?: number;
@@ -14,7 +15,15 @@ export type ImageProps = {
   height?: number;
 };
 
-export const Image: FC<ImageProps> = ({ src, alt, timeout, lazy, width, height }) => {
+export const Image: FC<ImageProps> = ({
+  src: internalSrc,
+  extSrc = '',
+  alt,
+  timeout,
+  lazy,
+  width,
+  height,
+}) => {
   const [loaded, setLoaded] = useState(false);
   const timeoutId = useRef<ReturnType<typeof setTimeout>>();
   const { ref, inView } = useInView({
@@ -22,6 +31,8 @@ export const Image: FC<ImageProps> = ({ src, alt, timeout, lazy, width, height }
     rootMargin: '200px 0px',
     skip: !lazy,
   });
+
+  const src = `/${internalSrc}` || extSrc;
 
   useEffect(() => {
     return () => {
@@ -36,13 +47,7 @@ export const Image: FC<ImageProps> = ({ src, alt, timeout, lazy, width, height }
 
   return (
     <div ref={ref} className={cn(styles['root'], loaded && styles['root--loaded'])} style={{ width, height }}>
-      <NextImage
-        src={inView || !lazy ? `/${src}` : ''}
-        alt={alt}
-        layout="fill"
-        onLoad={handleLoad}
-        quality={100}
-      />
+      <NextImage src={inView || !lazy ? src : ''} alt={alt} layout="fill" onLoad={handleLoad} quality={100} />
     </div>
   );
 };

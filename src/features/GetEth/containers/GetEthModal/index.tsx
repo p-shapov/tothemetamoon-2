@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { SwapWidget, darkTheme } from '@uniswap/widgets';
 import { useSigner } from 'wagmi';
 import { ethers } from 'ethers';
+import { goerli } from 'wagmi/chains';
 
 import { useGetEth } from 'features/GetEth/hooks/useGetEth';
 
@@ -29,8 +30,18 @@ export const GetEthModal: FC = observer(() => {
               defaultChainId={ENV.PREFERRED_CHAIN_ID}
               theme={darkTheme}
               jsonRpcUrlMap={{
-                [ENV.PREFERRED_CHAIN_ID]: `https://eth-goerli.alchemyapi.io/v2/${ENV.ALCHEMY_API_KEY}`,
+                [goerli.id]: `https://eth-goerli.alchemyapi.io/v2/${ENV.ALCHEMY_API_KEY}`,
               }}
+              tokenList={[
+                {
+                  address: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+                  symbol: 'WETH',
+                  name: 'Wrapped Ether',
+                  chainId: goerli.id,
+                  decimals: 18,
+                  logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6/logo.png', // eslint-disable-line
+                },
+              ]}
               hideConnectionUI
             />
           </div>

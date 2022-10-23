@@ -4,7 +4,7 @@ import { MintedNFTs } from 'features/ShowMintedNFTs/containers/MintedNFTs';
 import { AirdropPhase } from 'features/ClaimAirdrop/containers/AirdropPhase';
 import { PresalePhase } from 'features/WhitelistMint/containers/PresalePhase';
 import { SalePhase } from 'features/PublicMint/containers/SalePhase';
-import { RevealedNFTs } from 'features/ShowMintedNFTs/containers/RevealedNFTs';
+import { TokenPlaceholder } from 'features/ShowMintedNFTs/components/TokenPlaceholder';
 
 import { Tabs } from 'shared/components/Tabs';
 import { useSsr } from 'shared/hooks/useSsr';
@@ -51,12 +51,8 @@ export const MintingLayout: FC<MintingLayoutProps> = ({ id, children }) => {
         />
 
         <div className={styles['content']}>
-          {!isSsr && (
-            <>
-              {children}
-              <RevealedNFTs />
-            </>
-          )}
+          <div>{!isSsr && children}</div>
+          <TokenPlaceholder />
         </div>
       </div>
     </div>

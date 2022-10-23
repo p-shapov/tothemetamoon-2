@@ -6,6 +6,10 @@ import { BimkonEyes } from 'contracts/index';
 import { autoFetchable } from 'services/AutoFetchable';
 
 export class ShowMintedNFTs {
+  public get placeholderTokenUri() {
+    return this.placeholderTokenUriAutoFetchable.data;
+  }
+
   public get isRevealed() {
     return this.isRevealedAutoFetchable.data;
   }
@@ -22,6 +26,10 @@ export class ShowMintedNFTs {
     makeAutoObservable(this);
   }
 
+  private readonly placeholderTokenUriAutoFetchable = autoFetchable({
+    fetch: () => this.fetchPlaceholderTokenUri,
+  });
+
   private readonly isRevealedAutoFetchable = autoFetchable({
     fetch: () => this.fetchIsRevealed,
   });
@@ -34,6 +42,16 @@ export class ShowMintedNFTs {
   private readonly maxSupplyAutoFetchable = autoFetchable({
     fetch: () => this.fetchMaxSupply,
   });
+
+  private get fetchPlaceholderTokenUri() {
+    const contract = this.bimkonEyes;
+
+    return flow(function* () {
+      const placeholderTokenUri: string = yield contract.placeholderTokenUri();
+
+      return placeholderTokenUri;
+    });
+  }
 
   private get fetchIsRevealed() {
     const contract = this.bimkonEyes;
