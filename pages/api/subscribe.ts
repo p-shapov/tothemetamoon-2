@@ -7,7 +7,7 @@ import { getErrorMessage } from 'shared/utils/getErrorMessage';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method, body: email } = req;
 
-  const isBadRequest = typeof email !== 'string';
+  const isBadRequest = email === undefined;
 
   if (isBadRequest) return res.status(400).send('Bad Request');
 

@@ -16,9 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { contacts, walletAddress, aboutProject = '' } = JSON.parse(body);
 
   const isBadRequest =
-    [contacts, walletAddress].some((x) => typeof x !== 'string') ||
-    (aboutProject !== undefined && typeof aboutProject !== 'string') ||
-    !(slug === 'airdrop' || slug === 'presale');
+    [contacts, walletAddress].some((x) => x === undefined) || !(slug === 'airdrop' || slug === 'presale');
 
   if (isBadRequest) return res.status(400).send('Bad Request');
 
