@@ -7,6 +7,8 @@ import { WhitelistType } from 'services/Spreadsheets/types';
 
 import { getErrorMessage } from 'shared/utils/getErrorMessage';
 
+const spreadsheets = new Spreadsheets();
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const {
     method,
@@ -22,8 +24,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (isBadRequest) return res.status(400).send('Bad Request');
 
   const [type, address] = slug as [WhitelistType, string];
-
-  const spreadsheets = new Spreadsheets();
 
   try {
     switch (method) {

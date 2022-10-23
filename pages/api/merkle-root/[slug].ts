@@ -6,6 +6,8 @@ import { Spreadsheets } from 'services/Spreadsheets';
 
 import { getErrorMessage } from 'shared/utils/getErrorMessage';
 
+const spreadsheets = new Spreadsheets();
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const {
     method,
@@ -15,8 +17,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const isBadRequest = slug !== 'airdrop' && slug !== 'presale';
 
   if (isBadRequest) return res.status(400).send('Bad Request');
-
-  const spreadsheets = new Spreadsheets();
 
   try {
     switch (method) {

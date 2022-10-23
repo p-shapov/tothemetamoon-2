@@ -4,6 +4,8 @@ import { CoinGecko } from 'services/CoinGecko';
 
 import { getErrorMessage } from 'shared/utils/getErrorMessage';
 
+const coingecko = new CoinGecko();
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const {
     method,
@@ -21,7 +23,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (isBadRequest) return res.status(400).send('Bad Request');
 
   const [coinId, currency] = slug as [string, string];
-  const coingecko = new CoinGecko();
 
   try {
     switch (method) {

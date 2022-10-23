@@ -4,9 +4,9 @@ import { Spreadsheets } from 'services/Spreadsheets';
 
 import { getErrorMessage } from 'shared/utils/getErrorMessage';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const spreadsheets = new Spreadsheets();
+const spreadsheets = new Spreadsheets();
 
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const {
     method,
     body,
