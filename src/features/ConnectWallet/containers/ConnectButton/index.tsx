@@ -10,19 +10,14 @@ import { PopupMenu } from 'shared/components/PopupMenu';
 
 import { ConnectModal } from '../ConnectModal';
 
-export type ConnectButtonProps = {
-  showAddress?: boolean;
-};
-
-export const ConnectButton: FC<ConnectButtonProps> = ({ showAddress = false }) => {
+export const ConnectButton: FC = () => {
   const isSsr = useSsr();
   const { address, isDisconnected, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const { setModal } = useConnectWallet();
 
   const handleClick = () => {
-    if (address) disconnect();
-    else setModal('wallets');
+    if (isDisconnected) setModal('wallets');
   };
 
   return (
@@ -34,8 +29,13 @@ export const ConnectButton: FC<ConnectButtonProps> = ({ showAddress = false }) =
           { text: 'Disconnect', onClick: disconnect },
         ]}
       >
-        <Button onClick={handleClick} uppercase={!isSsr && !(showAddress && isConnected)}>
-          {address && !isSsr ? (showAddress ? trim(address, 4, 6) : 'Disconnect') : 'Connect wallet'}
+        <Button
+          onClick={handleClick}
+          uppercase={!isSsr && !isConnected}
+          isLoading={isConnected}
+          isDisabled={isConnected}
+        >
+          {address && !isSsr ? trim(address, 4, 6) : 'Connect wallet'}
         </Button>
       </PopupMenu>
 

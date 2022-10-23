@@ -28,7 +28,7 @@ export const Header: FC = () => {
         </nav>
 
         <div className={styles['account']}>
-          <ConnectButton showAddress />
+          <ConnectButton />
         </div>
       </div>
     </header>
