@@ -1,5 +1,7 @@
 import { toFixed } from 'shared/utils/toFixed';
 
+export const pair = ({ eth, rate }: { eth: number; rate: number }) => new Pair(eth, rate);
+
 export class Pair {
   public readonly usd;
 

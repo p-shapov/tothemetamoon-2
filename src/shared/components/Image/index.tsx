@@ -13,6 +13,7 @@ export type ImageProps = {
   timeout?: number;
   width?: number;
   height?: number;
+  priority?: boolean;
 };
 
 export const Image: FC<ImageProps> = ({
@@ -23,6 +24,7 @@ export const Image: FC<ImageProps> = ({
   lazy,
   width,
   height,
+  priority,
 }) => {
   const [loaded, setLoaded] = useState(false);
   const timeoutId = useRef<ReturnType<typeof setTimeout>>();
@@ -47,7 +49,14 @@ export const Image: FC<ImageProps> = ({
 
   return (
     <div ref={ref} className={cn(styles['root'], loaded && styles['root--loaded'])} style={{ width, height }}>
-      <NextImage src={inView || !lazy ? src : ''} alt={alt} layout="fill" onLoad={handleLoad} quality={100} />
+      <NextImage
+        src={inView || !lazy ? src : ''}
+        alt={alt}
+        layout="fill"
+        onLoad={handleLoad}
+        priority={priority}
+        quality={100}
+      />
     </div>
   );
 };

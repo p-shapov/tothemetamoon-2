@@ -8,7 +8,7 @@ import { BimkonEyes } from 'contracts/index';
 
 import { autoFetchable } from 'services/AutoFetchable';
 import { fetchError, fetchLoading, fetchNothing, fetchSucceed } from 'services/AutoFetchable/utils';
-import { Pair } from 'services/Pair';
+import { pair } from 'services/Pair';
 
 import { SaleState } from 'shared/types/saleStatus';
 import { stateToPhase } from 'shared/utils/stateToPhase';
@@ -30,12 +30,20 @@ export class WhitelistMint {
     );
   }
 
+  public get isWhitelisted() {
+    return !!this.whitelisted.value;
+  }
+
+  public get isNotWhitelisted() {
+    return !this.isWhitelisted && !this.isFinished;
+  }
+
   public get isSoon() {
-    return !!this.whitelisted.value && this.phase.value === 'soon';
+    return this.isWhitelisted && this.phase.value === 'soon';
   }
 
   public get isAllMinted() {
-    return !!this.whitelisted.value && this.allowedToMint.value === 0;
+    return this.isWhitelisted && this.phase.value === 'available' && this.allowedToMint.value === 0;
   }
 
   public get isFinished() {
@@ -43,11 +51,7 @@ export class WhitelistMint {
   }
 
   public get isAvailable() {
-    return !!this.whitelisted.value && this.phase.value === 'available' && !this.isAllMinted;
-  }
-
-  public get isNotWhitelisted() {
-    return !this.whitelisted.value && !this.isFinished;
+    return this.isWhitelisted && this.phase.value === 'available' && !this.isAllMinted;
   }
 
   public get price() {
@@ -160,7 +164,7 @@ export class WhitelistMint {
       const eth = formatToEth(bigNumber);
       const rate: number = yield getEthRateInUsd();
 
-      return new Pair(eth, rate);
+      return pair({ eth, rate });
     });
   }
 

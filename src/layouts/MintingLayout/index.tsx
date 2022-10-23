@@ -7,7 +7,7 @@ import { SalePhase } from 'features/PublicMint/containers/SalePhase';
 import { TokenPlaceholder } from 'features/ShowMintedNFTs/components/TokenPlaceholder';
 
 import { Tabs } from 'shared/components/Tabs';
-import { useSsr } from 'shared/hooks/useSsr';
+import { ClientOnly } from 'shared/components/ClientOnly';
 
 import styles from './MintingLayout.module.scss';
 
@@ -17,8 +17,6 @@ export type MintingLayoutProps = {
 };
 
 export const MintingLayout: FC<MintingLayoutProps> = ({ id, children }) => {
-  const isSsr = useSsr();
-
   return (
     <div className={styles['root']}>
       <div className={styles['minted-nfts']}>
@@ -51,7 +49,9 @@ export const MintingLayout: FC<MintingLayoutProps> = ({ id, children }) => {
         />
 
         <div className={styles['content']}>
-          <div>{!isSsr && children}</div>
+          <div>
+            <ClientOnly>{children}</ClientOnly>
+          </div>
           <TokenPlaceholder />
         </div>
       </div>

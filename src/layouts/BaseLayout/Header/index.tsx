@@ -5,6 +5,7 @@ import { ConnectButton } from 'features/ConnectWallet/containers/ConnectButton';
 
 import { Link } from 'shared/components/Link';
 import { ico_metalamp } from 'shared/icons/metalamp';
+import { ClientOnly } from 'shared/components/ClientOnly';
 
 import { headerNav } from '../data';
 import styles from './Header.module.scss';
@@ -28,7 +29,9 @@ export const Header: FC = () => {
         </nav>
 
         <div className={styles['account']}>
-          <ConnectButton />
+          <ClientOnly>
+            <ConnectButton />
+          </ClientOnly>
         </div>
       </div>
     </header>

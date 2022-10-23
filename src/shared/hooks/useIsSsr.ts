@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export const useSsr = () => {
+export const useIsSsr = () => {
   const [isSsr, setIsSsr] = useState(true);
 
   useEffect(() => {

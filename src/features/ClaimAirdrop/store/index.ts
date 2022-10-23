@@ -25,12 +25,20 @@ export class ClaimAirdrop {
     );
   }
 
+  public get isWhitelisted() {
+    return !!this.whitelisted.value;
+  }
+
+  public get isNotWhitelisted() {
+    return !this.isWhitelisted && !this.isFinished;
+  }
+
   public get isSoon() {
-    return !!this.whitelisted.value && this.phase.value === 'soon';
+    return this.isWhitelisted && this.phase.value === 'soon';
   }
 
   public get isClaimed() {
-    return !!this.whitelisted.value && this.allowedToClaim.value === 0;
+    return this.isWhitelisted && this.allowedToClaim.value === 0;
   }
 
   public get isFinished() {
@@ -38,11 +46,7 @@ export class ClaimAirdrop {
   }
 
   public get isAvailable() {
-    return !!this.whitelisted.value && this.phase.value === 'available' && !this.isClaimed;
-  }
-
-  public get isNotWhitelisted() {
-    return !this.whitelisted.value && !this.isFinished;
+    return this.isWhitelisted && this.phase.value === 'available' && !this.isClaimed;
   }
 
   public get phase() {

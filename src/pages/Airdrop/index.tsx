@@ -40,7 +40,7 @@ export const Airdrop: Page = observer(() => {
             </>
           )}
 
-          {isSoon && allowedToClaim.value && (
+          {isSoon && (
             <TextSection title="Airdrop starts soon!">{`You can claim ${allowedToClaim.value} NFTs for free!`}</TextSection>
           )}
 

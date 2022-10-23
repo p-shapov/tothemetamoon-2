@@ -8,7 +8,7 @@ import { BimkonEyes, SignatureChecker } from 'contracts/index';
 
 import { autoFetchable } from 'services/AutoFetchable';
 import { fetchError, fetchLoading, fetchNothing, fetchSucceed } from 'services/AutoFetchable/utils';
-import { Pair } from 'services/Pair';
+import { pair } from 'services/Pair';
 
 import { SaleState } from 'shared/types/saleStatus';
 import { stateToPhase } from 'shared/utils/stateToPhase';
@@ -29,7 +29,7 @@ export class PublicMint {
   }
 
   public get isAllMinted() {
-    return this.allowedToMint.value === 0;
+    return this.phase.value === 'available' && this.allowedToMint.value === 0;
   }
 
   public get isFinished() {
@@ -147,7 +147,7 @@ export class PublicMint {
       const eth = formatToEth(bigNumber);
       const rate: number = yield getEthRateInUsd();
 
-      return new Pair(eth, rate);
+      return pair({ eth, rate });
     });
   }
 

@@ -8,19 +8,16 @@ import { GetWhitelistedButton } from 'features/GetWhitelisted/containers/GetWhit
 
 import { Button } from 'shared/components/Button';
 import { Image } from 'shared/components/Image';
-import { useSsr } from 'shared/hooks/useSsr';
 import { ico_flame } from 'shared/icons/flame';
 import { ico_metalamp } from 'shared/icons/metalamp';
 import { ico_toTheMoon } from 'shared/icons/toTheMoon';
 import { Page } from 'shared/types/page';
+import { ClientOnly } from 'shared/components/ClientOnly';
 
 import styles from './Home.module.scss';
 
 export const Home: Page = () => {
   const { isConnected } = useAccount();
-  const isSsr = useSsr();
-
-  const isConnectedAndNotSsr = isConnected && !isSsr;
 
   return (
     <div className={styles['root']}>
@@ -41,31 +38,36 @@ export const Home: Page = () => {
         </p>
 
         <div className={styles['buttons']}>
-          {isConnectedAndNotSsr ? (
-            <Button to={'/airdrop'} uppercase>
-              Start minting
-            </Button>
-          ) : (
-            <ConnectButton />
-          )}
+          <ClientOnly>
+            {isConnected ? (
+              <Button to={'/airdrop'} uppercase>
+                Start minting
+              </Button>
+            ) : (
+              <ConnectButton />
+            )}
+          </ClientOnly>
+
           <GetWhitelistedButton type="airdrop">Get airdrop whitelisted</GetWhitelistedButton>
         </div>
       </div>
 
-      {isConnectedAndNotSsr && <div className={styles['to-the-moon']}>{ico_toTheMoon}</div>}
+      <ClientOnly>{isConnected && <div className={styles['to-the-moon']}>{ico_toTheMoon}</div>}</ClientOnly>
 
       <div className={styles['orbit']}>
         <div className={styles['planet']} />
 
-        <div
-          className={cn(
-            styles['spaceship'],
-            styles[`spaceship--${isConnectedAndNotSsr ? 'to-the-moon' : 'floating'}`],
-          )}
-        >
-          <Image alt="spaceship" src="images/spaceship.png" width={277} height={277} />
-          {isConnectedAndNotSsr && <div className={styles['rocket-flame']}>{ico_flame}</div>}
-        </div>
+        <ClientOnly>
+          <div
+            className={cn(
+              styles['spaceship'],
+              styles[`spaceship--${isConnected ? 'to-the-moon' : 'floating'}`],
+            )}
+          >
+            <Image alt="spaceship" src="images/spaceship.png" width={277} height={277} priority />
+            {isConnected && <div className={styles['rocket-flame']}>{ico_flame}</div>}
+          </div>
+        </ClientOnly>
       </div>
     </div>
   );
