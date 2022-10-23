@@ -64,7 +64,7 @@ export const Home: Page = () => {
               styles[`spaceship--${isConnected ? 'to-the-moon' : 'floating'}`],
             )}
           >
-            <Image alt="spaceship" src="images/spaceship.png" width={277} height={277} priority />
+            <Image alt="spaceship" src="images/spaceship.png" width={277} height={277} priority withFadeIn />
             {isConnected && <div className={styles['rocket-flame']}>{ico_flame}</div>}
           </div>
         </ClientOnly>

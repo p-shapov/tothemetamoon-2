@@ -13,6 +13,7 @@ export type ImageProps = {
   timeout?: number;
   width?: number;
   height?: number;
+  withFadeIn?: boolean;
   priority?: boolean;
 };
 
@@ -24,9 +25,10 @@ export const Image: FC<ImageProps> = ({
   lazy,
   width,
   height,
+  withFadeIn,
   priority,
 }) => {
-  const [loaded, setLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const timeoutId = useRef<ReturnType<typeof setTimeout>>();
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -43,12 +45,18 @@ export const Image: FC<ImageProps> = ({
   }, []);
 
   const handleLoad = () => {
-    if (timeout) timeoutId.current = setTimeout(() => setLoaded(true), timeout);
-    else setLoaded(true);
+    if (timeout) timeoutId.current = setTimeout(() => setIsLoaded(true), timeout);
+    else setIsLoaded(true);
   };
 
   return (
-    <div ref={ref} className={cn(styles['root'], loaded && styles['root--loaded'])} style={{ width, height }}>
+    <div
+      ref={ref}
+      className={cn(styles['root'], {
+        [styles['root--loaded']]: !withFadeIn || isLoaded,
+      })}
+      style={{ width, height }}
+    >
       <NextImage
         src={inView || !lazy ? src : ''}
         alt={alt}

@@ -12,7 +12,7 @@ export const Footer: FC = () => {
         {socialLinks.map(({ alt, href, src }, idx) => (
           <li key={idx}>
             <a className={styles['social-media']} href={href} rel="noopener noreferrer" target="_blank">
-              <Image alt={alt} src={src} width={40} height={40} />
+              <Image alt={alt} src={src} width={40} height={40} withFadeIn />
             </a>
           </li>
         ))}
