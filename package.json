@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "typed-chain": "typechain ./public/abis/*.json --target ethers-v5 --out-dir ./src/contracts/",
-    "typed-scss": "typed-scss-modules src/**/*.module.scss -n none -e default -d @import'./src/shared/styles/index.scss'; -u",
+    "typed-chain": "typechain \"./public/abis/*.json\" --target ethers-v5 --out-dir \"./src/contracts/\"",
+    "typed-scss": "typed-scss-modules \"src/**/*.module.scss\" -n none -e default -d \"@import'./src/shared/styles/index.scss';\" -u",
     "dev": "concurrently \"yarn typed-scss -w\" \"next dev\"",
-    "build": "yarn typed-scss && yarn typed-chain && next build",
+    "build": "yarn typed-scss && next build",
     "start": "concurrently \"yarn typed-scss -w\" \"next start\"",
     "prepare": "husky install",
     "lint": "next lint",
