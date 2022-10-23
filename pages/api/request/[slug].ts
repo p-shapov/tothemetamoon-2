@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     query: { slug },
   } = req;
 
-  const { contacts, walletAddress, aboutProject } = JSON.parse(body);
+  const { contacts, walletAddress, aboutProject = '' } = JSON.parse(body);
 
   const isBadRequest =
     [contacts, walletAddress].some((x) => typeof x !== 'string') ||
