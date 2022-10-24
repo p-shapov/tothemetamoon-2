@@ -20,7 +20,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     slug[1] === undefined ||
     slug[1] === undefined;
 
-  if (isBadRequest) return res.status(400).send('Bad Request');
+  if (isBadRequest) {
+    res.status(400).send('Bad Request');
+
+    return;
+  }
 
   const [coinId, currency] = slug as [string, string];
 
@@ -29,17 +33,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'GET': {
         const rate = await coingecko.getRate(coinId, currency);
 
-        return res.status(200).send(rate);
+        res.status(200).send(rate);
+
+        break;
       }
       default: {
         res.setHeader('Allow', ['GET']);
 
-        return res.status(405).send(`Method ${method} Not Allowed`);
+        res.status(405).send(`Method ${method} Not Allowed`);
       }
     }
   } catch (error) {
     const message = getErrorMessage(error);
 
-    return res.status(500).send(message);
+    res.status(500).send(message);
   }
 }

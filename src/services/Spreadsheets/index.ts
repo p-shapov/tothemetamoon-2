@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import { google, sheets_v4 } from 'googleapis';
 
 import { ENV } from 'shared/constants/env';
 
@@ -44,22 +44,30 @@ export class Spreadsheets {
     return leaves;
   };
 
+  private gsapi?: sheets_v4.Sheets;
+
   private readonly getGsapi = async () => {
-    const client = await new google.auth.JWT(
-      ENV.SPREADSHEET_CLIENT_EMAIL,
-      undefined,
-      ENV.SPREADSHEET_PRIVATE_KEY,
-      ['https://www.googleapis.com/auth/spreadsheets'],
-    );
+    if (!this.gsapi) {
+      const client = await new google.auth.JWT(
+        ENV.SPREADSHEET_CLIENT_EMAIL,
+        undefined,
+        ENV.SPREADSHEET_PRIVATE_KEY,
+        ['https://www.googleapis.com/auth/spreadsheets'],
+      );
 
-    await client.authorize();
+      await client.authorize();
 
-    const gsapi = google.sheets({
-      version: 'v4',
-      auth: client,
-    });
+      const gsapi = google.sheets({
+        version: 'v4',
+        auth: client,
+      });
 
-    return gsapi;
+      this.gsapi = gsapi;
+
+      return gsapi;
+    }
+
+    return this.gsapi;
   };
 
   private readonly appendRow = async ({

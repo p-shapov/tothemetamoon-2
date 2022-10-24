@@ -16,7 +16,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const isBadRequest = slug !== 'airdrop' && slug !== 'presale';
 
-  if (isBadRequest) return res.status(400).send('Bad Request');
+  if (isBadRequest) {
+    res.status(400).send('Bad Request');
+
+    return;
+  }
 
   try {
     switch (method) {
@@ -25,17 +29,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const tree = new MerkleTree(leaves, keccak256, { hashLeaves: true, sortPairs: true });
         const root = tree.getHexRoot();
 
-        return res.status(200).send(root);
+        res.status(200).send(root);
+
+        break;
       }
       default: {
         res.setHeader('Allow', ['GET']);
 
-        return res.status(405).send(`Method ${method} Not Allowed`);
+        res.status(405).send(`Method ${method} Not Allowed`);
       }
     }
   } catch (error) {
     const message = getErrorMessage(error);
 
-    return res.status(500).send(message);
+    res.status(500).send(message);
   }
 }

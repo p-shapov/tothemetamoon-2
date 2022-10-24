@@ -11,24 +11,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const isBadRequest = email === undefined;
 
-  if (isBadRequest) return res.status(400).send('Bad Request');
+  if (isBadRequest) {
+    res.status(400).send('Bad Request');
+
+    return;
+  }
 
   try {
     switch (method) {
       case 'POST': {
         await spreadsheets.postSubscriptionRequest(email);
 
-        return res.status(200).end();
+        res.status(200).end();
+
+        break;
       }
       default: {
         res.setHeader('Allow', ['POST']);
 
-        return res.status(405).send(`Method ${method} Not Allowed`);
+        res.status(405).send(`Method ${method} Not Allowed`);
       }
     }
   } catch (error) {
     const message = getErrorMessage(error);
 
-    return res.status(500).send(message);
+    res.status(500).send(message);
   }
 }
