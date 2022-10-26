@@ -7,5 +7,5 @@ import { Phase } from 'shared/components/Phase';
 export const SalePhase = observer(() => {
   const { phase } = usePublicMint();
 
-  return phase.value !== null ? <Phase value={phase.value} /> : null;
+  return <>{phase.value !== null ? <Phase value={phase.value} /> : null}</>;
 });

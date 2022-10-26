@@ -6,45 +6,32 @@ import { BimkonEyes } from 'contracts/index';
 import { autoFetchable } from 'services/AutoFetchable';
 
 export class ShowMintedNFTs {
-  public get placeholderTokenUri() {
-    return this.placeholderTokenUriAutoFetchable.data;
-  }
-
-  public get isRevealed() {
-    return this.isRevealedAutoFetchable.data;
-  }
-
-  public get totalSupply() {
-    return this.totalSupplyAutoFetchable.data;
-  }
-
-  public get maxSupply() {
-    return this.maxSupplyAutoFetchable.data;
-  }
-
-  constructor(private readonly bimkonEyes: BimkonEyes, private readonly totalSupplyDeps?: () => unknown) {
-    makeAutoObservable(this);
-  }
-
-  private readonly placeholderTokenUriAutoFetchable = autoFetchable({
+  public readonly placeholderTokenUri = autoFetchable({
     fetch: () => this.fetchPlaceholderTokenUri,
   });
 
-  private readonly isRevealedAutoFetchable = autoFetchable({
+  public readonly isRevealed = autoFetchable({
     fetch: () => this.fetchIsRevealed,
   });
 
-  private readonly totalSupplyAutoFetchable = autoFetchable({
+  public readonly totalSupply = autoFetchable({
     fetch: () => this.fetchTotalSupply,
     deps: this.totalSupplyDeps,
   });
 
-  private readonly maxSupplyAutoFetchable = autoFetchable({
+  public readonly maxSupply = autoFetchable({
     fetch: () => this.fetchMaxSupply,
   });
 
+  constructor(
+    private readonly getBimkonEyes: () => BimkonEyes,
+    private readonly totalSupplyDeps?: () => unknown,
+  ) {
+    makeAutoObservable(this);
+  }
+
   private get fetchPlaceholderTokenUri() {
-    const contract = this.bimkonEyes;
+    const contract = this.getBimkonEyes();
 
     return flow(function* () {
       const placeholderTokenUri: string = yield contract.placeholderTokenUri();
@@ -54,7 +41,7 @@ export class ShowMintedNFTs {
   }
 
   private get fetchIsRevealed() {
-    const contract = this.bimkonEyes;
+    const contract = this.getBimkonEyes();
 
     return flow(function* () {
       const isRevealed: boolean = yield contract.isRevealed();
@@ -64,7 +51,7 @@ export class ShowMintedNFTs {
   }
 
   private get fetchTotalSupply() {
-    const contract = this.bimkonEyes;
+    const contract = this.getBimkonEyes();
 
     return flow(function* () {
       const bigNumber: BigNumber = yield contract.totalSupply();
@@ -74,7 +61,7 @@ export class ShowMintedNFTs {
   }
 
   private get fetchMaxSupply() {
-    const contract = this.bimkonEyes;
+    const contract = this.getBimkonEyes();
 
     return flow(function* () {
       const bigNumber: BigNumber = yield contract.MAX_SUPPLY();

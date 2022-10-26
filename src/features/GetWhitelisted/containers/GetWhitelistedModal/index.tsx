@@ -11,6 +11,7 @@ import { Input } from 'shared/components/Input';
 import { Modal } from 'shared/components/Modal';
 
 import styles from './GetWhitelistedModal.module.scss';
+import { titleData } from './data';
 
 export type GetWhitelistedModalProps = {
   type: WhitelistType;
@@ -24,12 +25,8 @@ export const GetWhitelistedModal: FC<GetWhitelistedModalProps> = observer(({ typ
     presale: presaleForm,
   };
 
-  const { fields, send, isSent } = forms[type];
-
-  const title: Record<WhitelistType, string> = {
-    airdrop: 'AirDrop',
-    presale: 'Private Presale',
-  };
+  const { fields, send, isSent, isLoading } = forms[type];
+  const title = titleData[type];
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -39,7 +36,7 @@ export const GetWhitelistedModal: FC<GetWhitelistedModalProps> = observer(({ typ
     <>
       {showModal && (
         <Modal
-          title={!isSent ? `To get whitelisted for an ${title[type]}` : 'Thanks for participating'}
+          title={!isSent ? `To get whitelisted for an ${title}` : 'Thanks for participating'}
           description={
             !isSent ? 'send us an information about your project you want us to participate in' : undefined
           }
@@ -79,7 +76,7 @@ export const GetWhitelistedModal: FC<GetWhitelistedModalProps> = observer(({ typ
               </Input>
 
               <div className={styles['send']}>
-                <Button type="submit" stretch uppercase>
+                <Button type="submit" isLoading={isLoading} isDisabled={isLoading} stretch uppercase>
                   Send
                 </Button>
               </div>

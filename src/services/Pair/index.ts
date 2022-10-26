@@ -1,3 +1,4 @@
+import { ENV } from 'shared/constants/env';
 import { toFixed } from 'shared/utils/toFixed';
 
 export const pair = ({ eth, rate }: { eth: number; rate: number }) => new Pair(eth, rate);
@@ -23,9 +24,9 @@ export class Pair {
 
   public readonly lt = (x: Pair) => this.eth < x.eth;
 
-  public readonly formatToEth = () => `${toFixed(this.eth, 3)} ETH`;
+  public readonly formatToEth = () => `${toFixed(this.eth, ENV.ETH_FRACTION)} ETH`;
 
-  public readonly formatToUsd = () => `$${toFixed(this.usd)}`;
+  public readonly formatToUsd = () => `$${toFixed(this.usd, ENV.USD_FRACTION)}`;
 
   public readonly format = () => `${this.formatToEth()} (${this.formatToUsd()})`;
 

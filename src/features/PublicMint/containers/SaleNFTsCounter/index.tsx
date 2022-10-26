@@ -4,17 +4,18 @@ import { observer } from 'mobx-react-lite';
 import { usePublicMint } from 'features/PublicMint/hooks/usePublicMint';
 
 import { CounterWithMax } from 'shared/components/Counter';
+import { ClientOnly } from 'shared/components/ClientOnly';
 
 export const SaleNFTsCounter: FC = observer(() => {
-  const { allowedToMint, amountToMint, setAmountToMint } = usePublicMint();
+  const { allowedAmount, amount, setAmount } = usePublicMint();
 
   return (
-    <>
-      {allowedToMint.value !== null && (
-        <CounterWithMax min={1} max={allowedToMint.value} onChange={setAmountToMint}>
-          {amountToMint}
+    <ClientOnly>
+      {allowedAmount.value !== null && (
+        <CounterWithMax min={1} max={allowedAmount.value} onChange={setAmount}>
+          {amount}
         </CounterWithMax>
       )}
-    </>
+    </ClientOnly>
   );
 });

@@ -7,7 +7,6 @@ import { SalePhase } from 'features/PublicMint/containers/SalePhase';
 import { TokenPlaceholder } from 'features/ShowMintedNFTs/components/TokenPlaceholder';
 
 import { Tabs } from 'shared/components/Tabs';
-import { ClientOnly } from 'shared/components/ClientOnly';
 
 import styles from './MintingLayout.module.scss';
 
@@ -49,9 +48,7 @@ export const MintingLayout: FC<MintingLayoutProps> = ({ id, children }) => {
         />
 
         <div className={styles['content']}>
-          <div>
-            <ClientOnly>{children}</ClientOnly>
-          </div>
+          <div>{children}</div>
           <TokenPlaceholder />
         </div>
       </div>

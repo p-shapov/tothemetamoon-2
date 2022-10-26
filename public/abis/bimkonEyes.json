@@ -3,8 +3,7 @@
     "inputs": [
       { "internalType": "address", "name": "priceManager", "type": "address" },
       { "internalType": "address", "name": "sellManager", "type": "address" },
-      { "internalType": "address", "name": "whiteListManager", "type": "address" },
-      { "internalType": "address", "name": "_signatureCheckerContract", "type": "address" }
+      { "internalType": "address", "name": "whiteListManager", "type": "address" }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
@@ -16,9 +15,6 @@
   { "inputs": [], "name": "ArraysAreDifferentLength", "type": "error" },
   { "inputs": [], "name": "BalanceQueryForZeroAddress", "type": "error" },
   { "inputs": [], "name": "BeyondMaxSupply", "type": "error" },
-  { "inputs": [], "name": "CallerIsNotPriceManager", "type": "error" },
-  { "inputs": [], "name": "CallerIsNotSellManager", "type": "error" },
-  { "inputs": [], "name": "CallerIsNotWhitelistManager", "type": "error" },
   { "inputs": [], "name": "CantMintMore", "type": "error" },
   { "inputs": [], "name": "FailedToSendAssets", "type": "error" },
   { "inputs": [], "name": "InvalidSignature", "type": "error" },
@@ -61,6 +57,15 @@
   {
     "anonymous": false,
     "inputs": [
+      { "indexed": true, "internalType": "address", "name": "_claimer", "type": "address" },
+      { "indexed": true, "internalType": "uint256", "name": "quantity", "type": "uint256" }
+    ],
+    "name": "ClaimAirdrop",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
       { "indexed": true, "internalType": "uint256", "name": "fromTokenId", "type": "uint256" },
       { "indexed": false, "internalType": "uint256", "name": "toTokenId", "type": "uint256" },
       { "indexed": true, "internalType": "address", "name": "from", "type": "address" },
@@ -72,10 +77,10 @@
   {
     "anonymous": false,
     "inputs": [
-      { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
+      { "indexed": true, "internalType": "address", "name": "_claimer", "type": "address" },
+      { "indexed": true, "internalType": "uint256", "name": "quantity", "type": "uint256" }
     ],
-    "name": "OwnershipTransferred",
+    "name": "Mint",
     "type": "event"
   },
   {
@@ -199,11 +204,27 @@
   {
     "anonymous": false,
     "inputs": [
+      { "indexed": true, "internalType": "address", "name": "_claimer", "type": "address" },
+      { "indexed": true, "internalType": "uint256", "name": "quantity", "type": "uint256" }
+    ],
+    "name": "WhiteListMint",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
       { "indexed": true, "internalType": "address", "name": "_to", "type": "address" },
       { "indexed": true, "internalType": "uint256", "name": "_value", "type": "uint256" }
     ],
     "name": "Withdraw",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "CAT",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -251,6 +272,13 @@
     "inputs": [],
     "name": "SELL_PHASE_MANAGER_ROLE",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "TEAM_MINT_AMOUNT",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -393,6 +421,16 @@
   },
   {
     "inputs": [
+      { "internalType": "bytes", "name": "_signature", "type": "bytes" },
+      { "internalType": "address", "name": "_sender", "type": "address" }
+    ],
+    "name": "isValidSignature",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
       { "internalType": "bytes32[]", "name": "_merkleProof", "type": "bytes32[]" },
       { "internalType": "address", "name": "_account", "type": "address" }
     ],
@@ -430,13 +468,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }],
     "name": "ownerOf",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
@@ -462,13 +493,6 @@
     "name": "publicSalePrice",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -567,13 +591,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "signatureCheckerContract",
-    "outputs": [{ "internalType": "contract ISignatureChecker", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [{ "internalType": "bytes4", "name": "interfaceId", "type": "bytes4" }],
     "name": "supportsInterface",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
@@ -665,13 +682,6 @@
       { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
     ],
     "name": "transferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
-    "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

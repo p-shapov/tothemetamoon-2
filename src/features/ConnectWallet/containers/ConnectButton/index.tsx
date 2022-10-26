@@ -6,22 +6,23 @@ import { useConnectWallet } from 'features/ConnectWallet/hooks/useConnectWallet'
 import { Button } from 'shared/components/Button';
 import { trim } from 'shared/utils/trim';
 import { PopupMenu } from 'shared/components/PopupMenu';
+import { ClientOnly } from 'shared/components/ClientOnly';
 
 import { ConnectModal } from '../ConnectModal';
 
 export const ConnectButton: FC = () => {
-  const { address, isDisconnected, isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const { setModal } = useConnectWallet();
 
   const handleClick = () => {
-    if (isDisconnected) setModal('wallets');
+    if (!isConnected) setModal('wallets');
   };
 
   return (
-    <>
+    <ClientOnly>
       <PopupMenu
-        isDisabled={isDisconnected}
+        isDisabled={!isConnected}
         items={[
           { text: 'Observe my NFT', to: '/' },
           { text: 'Disconnect', onClick: disconnect },
@@ -38,6 +39,6 @@ export const ConnectButton: FC = () => {
       </PopupMenu>
 
       <ConnectModal />
-    </>
+    </ClientOnly>
   );
 };

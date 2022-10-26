@@ -20,81 +20,102 @@ const getPresaleProof = getProof.bind(null, 'presale');
 export class WhitelistMint {
   public mintStatus = fetchNothing<TransactionStatus>();
 
-  public amountToMint = 1;
+  public amount = 1;
 
-  public get isFetched() {
-    return (
-      this.phaseAutoFetchable.isFetched &&
-      this.allowedToMintAutoFetchable.isFetched &&
-      this.whitelistedAutoFetchable.isFetched
-    );
+  public readonly price = autoFetchable({
+    fetch: () => this.fetchPrice,
+  });
+
+  public readonly phase = autoFetchable({
+    fetch: () => this.fetchPhase,
+  });
+
+  public readonly whitelisted = autoFetchable({
+    fetch: () => this.fetchWhitelisted,
+  });
+
+  public readonly allowedAmount = autoFetchable({
+    fetch: () => this.fetchAllowedAmount,
+    deps: () => this.isConfirmed,
+  });
+
+  public readonly totalSupply = autoFetchable({
+    fetch: () => this.fetchTotalSupply,
+    deps: () => this.isConfirmed,
+  });
+
+  public readonly maxSupply = autoFetchable({
+    fetch: () => this.fetchMaxSupply,
+  });
+
+  public get isPending() {
+    return this.mintStatus.value === 'pending';
+  }
+
+  public get isConfirmed() {
+    return this.mintStatus.value === 'confirmed';
   }
 
   public get isWhitelisted() {
-    return !!this.whitelisted.value;
+    const { value: whitelisted, isFetched } = this.whitelisted;
+
+    return isFetched && !!whitelisted;
   }
 
   public get isNotWhitelisted() {
-    return !this.isWhitelisted && !this.isFinished;
+    const { value: whitelisted, isFetched } = this.whitelisted;
+
+    return isFetched && !whitelisted && !this.isFinished;
   }
 
   public get isSoon() {
-    return this.isWhitelisted && this.phase.value === 'soon';
+    const { value: phase, isFetched } = this.phase;
+
+    return isFetched && phase === 'soon' && this.isWhitelisted;
   }
 
-  public get isAllMinted() {
-    return this.isWhitelisted && this.phase.value === 'available' && this.allowedToMint.value === 0;
+  public get isMinted() {
+    const { value: allowedAmount, isFetched: allowedAmountIsFetched } = this.allowedAmount;
+    const { value: phase, isFetched: phaseIsFetched } = this.phase;
+
+    return (
+      phaseIsFetched &&
+      allowedAmountIsFetched &&
+      phase === 'available' &&
+      allowedAmount === 0 &&
+      this.isWhitelisted
+    );
   }
 
   public get isFinished() {
-    return this.phase.value === 'finished' && !this.isAllMinted;
+    const { value: phase, isFetched } = this.phase;
+
+    return isFetched && phase === 'finished';
   }
 
   public get isAvailable() {
-    return this.isWhitelisted && this.phase.value === 'available' && !this.isAllMinted;
-  }
+    const { value: phase, isFetched } = this.phase;
 
-  public get price() {
-    return this.priceAutoFetchable.data;
+    return isFetched && phase === 'available' && this.isWhitelisted && !this.isMinted;
   }
 
   public get totalCost() {
     const price = this.price.value;
 
-    return price && price.mul(this.amountToMint);
+    return price && price.mul(this.amount);
   }
 
-  public get phase() {
-    return this.phaseAutoFetchable.data;
-  }
-
-  public get whitelisted() {
-    return this.whitelistedAutoFetchable.data;
-  }
-
-  public get allowedToMint() {
-    return this.allowedToMintAutoFetchable.data;
-  }
-
-  public get totalSupply() {
-    return this.totalSupplyAutoFetchable.data;
-  }
-
-  public get maxSupply() {
-    return this.maxSupplyAutoFetchable.data;
-  }
-
-  public readonly setAmountToMint = (x: number) => {
-    if (x >= 1 && x <= (this.allowedToMint.value || 1)) {
+  public readonly setAmount = (x: number) => {
+    if (x >= 1 && x <= (this.allowedAmount.value || 1)) {
       runInAction(() => {
-        this.amountToMint = x;
+        this.amount = x;
       });
     }
   };
 
   public readonly mint = async () => {
-    const address = this.address;
-    const bimkonEyes = this.bimkonEyes;
+    const address = this.getAddress();
+    const bimkonEyes = this.getBimkonEyes();
 
     this.mintStatus = fetchLoading<TransactionStatus>(this.mintStatus.value);
 
@@ -102,8 +123,8 @@ export class WhitelistMint {
       try {
         const proof = await getPresaleProof(address);
         const price = await bimkonEyes.whiteListSalePrice();
-        const transaction = await bimkonEyes.whitelistMint(proof, this.amountToMint, {
-          value: price.mul(this.amountToMint),
+        const transaction = await bimkonEyes.whitelistMint(proof, this.amount, {
+          value: price.mul(this.amount),
         });
 
         runInAction(() => {
@@ -112,7 +133,7 @@ export class WhitelistMint {
 
         await transaction.wait();
 
-        this.setAmountToMint(1);
+        this.setAmount(1);
 
         runInAction(() => {
           this.mintStatus = fetchSucceed('confirmed');
@@ -125,39 +146,16 @@ export class WhitelistMint {
     }
   };
 
-  constructor(private readonly bimkonEyes: BimkonEyes, private readonly address?: string) {
+  constructor(
+    private readonly getBimkonEyes: () => BimkonEyes,
+    private readonly getAddress: () => string | undefined,
+  ) {
     makeAutoObservable(this);
     this.runStateChangeListener();
   }
 
-  private readonly priceAutoFetchable = autoFetchable({
-    fetch: () => this.fetchPrice,
-  });
-
-  private readonly phaseAutoFetchable = autoFetchable({
-    fetch: () => this.fetchPhase,
-  });
-
-  private readonly whitelistedAutoFetchable = autoFetchable({
-    fetch: () => this.fetchWhitelisted,
-  });
-
-  private readonly allowedToMintAutoFetchable = autoFetchable({
-    fetch: () => this.fetchAllowedToMint,
-    deps: () => this.mintStatus.value === 'confirmed',
-  });
-
-  private readonly totalSupplyAutoFetchable = autoFetchable({
-    fetch: () => this.fetchTotalSupply,
-    deps: () => this.mintStatus.value === 'confirmed',
-  });
-
-  private readonly maxSupplyAutoFetchable = autoFetchable({
-    fetch: () => this.fetchMaxSupply,
-  });
-
   private get fetchPrice() {
-    const bimkonEyes = this.bimkonEyes;
+    const bimkonEyes = this.getBimkonEyes();
 
     return flow(function* () {
       const bigNumber: BigNumber = yield bimkonEyes.whiteListSalePrice();
@@ -169,7 +167,7 @@ export class WhitelistMint {
   }
 
   private get fetchPhase() {
-    const bimkonEyes = this.bimkonEyes;
+    const bimkonEyes = this.getBimkonEyes();
 
     return flow(function* () {
       const state: SaleState = yield bimkonEyes.whiteListSale();
@@ -179,8 +177,8 @@ export class WhitelistMint {
   }
 
   private get fetchWhitelisted() {
-    const bimkonEyes = this.bimkonEyes;
-    const address = this.address;
+    const bimkonEyes = this.getBimkonEyes();
+    const address = this.getAddress();
 
     return flow(function* () {
       if (address) {
@@ -190,13 +188,13 @@ export class WhitelistMint {
         return whitelisted;
       }
 
-      return false;
+      return null;
     });
   }
 
   private get fetchTotalSupply() {
-    const bimkonEyes = this.bimkonEyes;
-    const address = this.address;
+    const bimkonEyes = this.getBimkonEyes();
+    const address = this.getAddress();
 
     return flow(function* () {
       if (address) {
@@ -209,9 +207,9 @@ export class WhitelistMint {
     });
   }
 
-  private get fetchAllowedToMint() {
-    const bimkonEyes = this.bimkonEyes;
-    const address = this.address;
+  private get fetchAllowedAmount() {
+    const bimkonEyes = this.getBimkonEyes();
+    const address = this.getAddress();
 
     return flow(function* () {
       if (address) {
@@ -225,8 +223,8 @@ export class WhitelistMint {
   }
 
   private get fetchMaxSupply() {
-    const bimkonEyes = this.bimkonEyes;
-    const address = this.address;
+    const bimkonEyes = this.getBimkonEyes();
+    const address = this.getAddress();
 
     return flow(function* () {
       if (address) {
@@ -240,14 +238,16 @@ export class WhitelistMint {
   }
 
   private readonly runStateChangeListener = () => {
-    const handleStateChange = (state: SaleState) => this.phaseAutoFetchable.forceUpdate(stateToPhase(state));
+    const bimkonEyes = this.getBimkonEyes();
+
+    const handleStateChange = (state: SaleState) => this.phase.forceUpdate(stateToPhase(state));
 
     onBecomeObserved(this, 'phase', () => {
-      if (this.bimkonEyes.signer) this.bimkonEyes.on('SetWhiteListSaleState', handleStateChange);
+      if (bimkonEyes.signer) bimkonEyes.on('SetWhiteListSaleState', handleStateChange);
     });
 
     onBecomeUnobserved(this, 'phase', () => {
-      if (this.bimkonEyes.signer) this.bimkonEyes.off('SetWhiteListSaleState', handleStateChange);
+      if (bimkonEyes.signer) bimkonEyes.off('SetWhiteListSaleState', handleStateChange);
     });
   };
 }

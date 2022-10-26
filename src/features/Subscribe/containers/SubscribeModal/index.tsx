@@ -14,7 +14,7 @@ export const SubscribeModal: FC = observer(() => {
   const {
     toggleModal,
     showModal,
-    form: { send, fields, isSent },
+    form: { send, fields, isSent, isLoading },
   } = useSubscribe();
 
   const handleSubmit = (e: FormEvent) => {
@@ -47,7 +47,7 @@ export const SubscribeModal: FC = observer(() => {
               </Input>
 
               <div className={styles['send']}>
-                <Button type="submit" stretch uppercase>
+                <Button type="submit" isLoading={isLoading} isDisabled={isLoading} stretch uppercase>
                   Send
                 </Button>
               </div>

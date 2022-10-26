@@ -1,8 +1,7 @@
 import { createContext, FC, ReactNode, useMemo } from 'react';
-import { useAccount, useContract, useSigner } from 'wagmi';
 import { observer } from 'mobx-react-lite';
 
-import { BimkonEyes, SignatureChecker } from 'contracts/index';
+import { BimkonEyes } from 'contracts/index';
 
 import { ShowMintedNFTs } from 'features/ShowMintedNFTs/store';
 import { ConnectWalletStore } from 'features/ConnectWallet/store';
@@ -15,6 +14,8 @@ import { GetEthStore } from 'features/GetEth/store';
 
 import { ENV } from 'shared/constants/env';
 import { ABI } from 'shared/constants/abi';
+import { useObservableContract } from 'shared/hooks/useObservableContract';
+import { useObservableAddress } from 'shared/hooks/useObservableAddress';
 
 export type StoreContextValue = {
   connectWallet: ConnectWalletStore;
@@ -30,35 +31,52 @@ export type StoreContextValue = {
 export const StoreContext = createContext<StoreContextValue | null>(null);
 
 export const StoreProvider: FC<{ children: ReactNode }> = observer(({ children }) => {
-  const { data: signer } = useSigner();
-  const { address } = useAccount();
-  const bimkonEyes = useContract<BimkonEyes>({
+  const observableBimkonEyes = useObservableContract<BimkonEyes>({
     addressOrName: ENV.BIMKON_EYES_ADDRESS,
     contractInterface: ABI.BIMKON_EYES,
-    signerOrProvider: signer,
   });
-  const signatureChecker = useContract<SignatureChecker>({
-    addressOrName: ENV.SIGNATURE_CHECKER_ADDRESS,
-    contractInterface: ABI.SIGNATURE_CHECKER,
-    signerOrProvider: signer,
-  });
+  const observableAddress = useObservableAddress();
 
   const connectWallet = useMemo(() => new ConnectWalletStore(), []);
-  const claimAirdrop = useMemo(() => new ClaimAirdrop(bimkonEyes, address), [address, bimkonEyes]);
-  const publicMint = useMemo(
-    () => new PublicMint(bimkonEyes, signatureChecker, address),
-    [address, bimkonEyes, signatureChecker],
+  const claimAirdrop = useMemo(
+    () =>
+      new ClaimAirdrop(
+        () => observableBimkonEyes.value,
+        () => observableAddress.value,
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
-  const whitelistMint = useMemo(() => new WhitelistMint(bimkonEyes, address), [address, bimkonEyes]);
+  const publicMint = useMemo(
+    () =>
+      new PublicMint(
+        () => observableBimkonEyes.value,
+        () => observableAddress.value,
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+  const whitelistMint = useMemo(
+    () =>
+      new WhitelistMint(
+        () => observableBimkonEyes.value,
+        () => observableAddress.value,
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
   const showMintedNFTs = useMemo(
     () =>
-      new ShowMintedNFTs(bimkonEyes, () => [
-        claimAirdrop.claimStatus.value === 'confirmed',
-        whitelistMint.mintStatus.value === 'confirmed',
-        publicMint.mintStatus.value === 'confirmed',
-      ]),
+      new ShowMintedNFTs(
+        () => observableBimkonEyes.value,
+        () => [
+          claimAirdrop.claimStatus.value === 'confirmed',
+          whitelistMint.mintStatus.value === 'confirmed',
+          publicMint.mintStatus.value === 'confirmed',
+        ],
+      ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [bimkonEyes],
+    [],
   );
   const getWhitelisted = useMemo(() => new GetWhitelisted(), []);
   const subscribe = useMemo(() => new Subscribe(), []);

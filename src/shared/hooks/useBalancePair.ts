@@ -11,7 +11,7 @@ export const useBalancePair = () => {
   const [pair, setPair] = useState<Pair>();
 
   const { address } = useAccount();
-  const { data: balance } = useBalance({ addressOrName: address, watch: true });
+  const { data: balance } = useBalance({ addressOrName: address });
 
   useEffect(() => {
     let canceled = false;

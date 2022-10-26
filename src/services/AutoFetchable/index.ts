@@ -14,31 +14,43 @@ export const autoFetchable = <T>({
 export class AutoFetchable<T> {
   public data = fetchNothing<T>();
 
-  public readonly forceUpdate = (value: T) => {
-    runInAction(() => {
-      this.data = fetchSucceed(value);
-    });
-  };
+  public get value() {
+    return this.data.value;
+  }
+
+  public get status() {
+    return this.data.status;
+  }
+
+  public get error() {
+    return this.data.error;
+  }
 
   public get isNothing() {
-    return this.data.status === 'nothing';
+    return this.status === 'nothing';
   }
 
   public get isSucceed() {
-    return this.data.status === 'succeed';
+    return this.status === 'succeed';
   }
 
   public get isLoading() {
-    return this.data.status === 'loading';
+    return this.status === 'loading';
   }
 
   public get isError() {
-    return this.data.status === 'error';
+    return this.status === 'error';
   }
 
   public get isFetched() {
     return this.data.value !== null;
   }
+
+  public readonly forceUpdate = (value: T) => {
+    runInAction(() => {
+      this.data = fetchSucceed(value);
+    });
+  };
 
   constructor(
     private readonly fetch: () => () => CancellablePromise<T> | T,

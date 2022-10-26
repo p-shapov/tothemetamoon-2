@@ -12,9 +12,9 @@ export class ConnectWalletStore {
   public modal: ModalName | null = null;
   public connectorId: null | ConnectorId = null;
 
-  public get qrcode() {
-    return this.qrcodeAutoFetchable.data;
-  }
+  public readonly qrcode = autoFetchable({
+    fetch: () => this.fetchQrcode,
+  });
 
   public readonly setConnectorId = (id: ConnectorId | null) => {
     this.connectorId = id;
@@ -27,10 +27,6 @@ export class ConnectWalletStore {
   constructor() {
     makeAutoObservable(this);
   }
-
-  public readonly qrcodeAutoFetchable = autoFetchable({
-    fetch: () => this.fetchQrcode,
-  });
 
   private get fetchQrcode() {
     const connector = this.connectorId && connectors[this.connectorId];

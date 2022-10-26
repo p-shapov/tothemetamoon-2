@@ -24,13 +24,15 @@ export const ConnectModal: FC = observer(() => {
     setConnectorId(null);
     setModal('wallets');
   };
+
   const handleClose = setModal.bind(null, null);
+
   const handleConnect = (id: ConnectorId) => {
     const connector = connectors[id];
-
-    setTimeout(setConnectorId.bind(null, id));
     setModal(id);
     connect({ connector, chainId: ENV.PREFERRED_CHAIN_ID });
+    // setTimeout for queuing qrcode fetch after provider initialization
+    setTimeout(() => setConnectorId(id));
   };
 
   const { connect, isLoading, error } = useConnect({

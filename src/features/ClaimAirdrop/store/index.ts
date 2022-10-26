@@ -17,61 +17,85 @@ const getAirdropProof = getProof.bind(null, 'airdrop');
 export class ClaimAirdrop {
   public claimStatus = fetchNothing<TransactionStatus>();
 
-  public get isFetched() {
-    return (
-      this.allowedToClaimAutoFetchable.isFetched &&
-      this.phaseAutoFetchable.isFetched &&
-      this.whitelistedAutoFetchable.isFetched
-    );
+  public readonly phase = autoFetchable({
+    fetch: () => this.fetchPhase,
+  });
+
+  public readonly whitelisted = autoFetchable({
+    fetch: () => this.fetchWhitelisted,
+  });
+
+  public readonly allowedAmount = autoFetchable({
+    fetch: () => this.fetchAllowedAmount,
+    deps: () => this.isConfirmed,
+  });
+
+  public readonly maxSupply = autoFetchable({
+    fetch: () => this.fetchMaxSupply,
+  });
+
+  public get isPending() {
+    return this.claimStatus.value === 'pending';
+  }
+
+  public get isConfirmed() {
+    return this.claimStatus.value === 'confirmed';
   }
 
   public get isWhitelisted() {
-    return !!this.whitelisted.value;
+    const { value: whitelisted, isFetched } = this.whitelisted;
+
+    return isFetched && !!whitelisted;
   }
 
   public get isNotWhitelisted() {
-    return !this.isWhitelisted && !this.isFinished;
+    const { value: whitelisted, isFetched } = this.whitelisted;
+
+    return isFetched && !whitelisted && !this.isFinished;
   }
 
   public get isSoon() {
-    return this.isWhitelisted && this.phase.value === 'soon';
+    const { value: phase, isFetched } = this.phase;
+
+    return isFetched && phase === 'soon' && this.isWhitelisted;
   }
 
-  public get isClaimed() {
-    return this.isWhitelisted && this.allowedToClaim.value === 0;
-  }
+  public get isMinted() {
+    const { value: allowedAmount, isFetched: allowedAmountIsFetched } = this.allowedAmount;
+    const { value: phase, isFetched: phaseIsFetched } = this.phase;
 
-  public get isFinished() {
-    return this.phase.value === 'finished' && !this.isClaimed;
+    return (
+      allowedAmountIsFetched &&
+      phaseIsFetched &&
+      allowedAmount === 0 &&
+      phase === 'available' &&
+      this.isWhitelisted
+    );
   }
 
   public get isAvailable() {
-    return this.isWhitelisted && this.phase.value === 'available' && !this.isClaimed;
+    const { value: phase, isFetched } = this.phase;
+
+    return isFetched && phase === 'available' && this.isWhitelisted && !this.isMinted;
   }
 
-  public get phase() {
-    return this.phaseAutoFetchable.data;
+  public get isFinished() {
+    const { value: phase, isFetched } = this.phase;
+
+    return isFetched && phase === 'finished';
   }
 
-  public get whitelisted() {
-    return this.whitelistedAutoFetchable.data;
-  }
-
-  public get allowedToClaim() {
-    return this.allowedToClaimAutoFetchable.data;
-  }
-
-  public readonly claim = async () => {
-    const address = this.address;
-    const bimkonEyes = this.bimkonEyes;
+  public readonly mint = async () => {
+    const address = this.getAddress();
+    const bimkonEyes = this.getBimkonEyes();
 
     this.claimStatus = fetchLoading<TransactionStatus>(this.claimStatus.value);
 
     if (address) {
       try {
         const proof = await getAirdropProof(address);
-        const allowedToClaim = await bimkonEyes.allowedToClaimDropAmount(address);
-        const transaction = await bimkonEyes.claimAirdrop(proof, allowedToClaim);
+        const maxAirdropMint = await bimkonEyes.MAX_AIRDROP_MINT();
+        const transaction = await bimkonEyes.claimAirdrop(proof, maxAirdropMint);
 
         runInAction(() => {
           this.claimStatus = fetchSucceed('pending');
@@ -90,26 +114,16 @@ export class ClaimAirdrop {
     }
   };
 
-  constructor(private readonly bimkonEyes: BimkonEyes, private readonly address?: string) {
+  constructor(
+    private readonly getBimkonEyes: () => BimkonEyes,
+    private readonly getAddress: () => string | undefined,
+  ) {
     makeAutoObservable(this);
     this.runStateChangeListener();
   }
 
-  private readonly phaseAutoFetchable = autoFetchable({
-    fetch: () => this.fetchPhase,
-  });
-
-  private readonly whitelistedAutoFetchable = autoFetchable({
-    fetch: () => this.fetchWhitelisted,
-  });
-
-  private readonly allowedToClaimAutoFetchable = autoFetchable({
-    fetch: () => this.allowedToClaimSupply,
-    deps: () => this.claimStatus.value === 'confirmed',
-  });
-
   private get fetchPhase() {
-    const bimkonEyes = this.bimkonEyes;
+    const bimkonEyes = this.getBimkonEyes();
 
     return flow(function* () {
       const state: SaleState = yield bimkonEyes.airDrop();
@@ -118,25 +132,19 @@ export class ClaimAirdrop {
     });
   }
 
-  private get fetchWhitelisted() {
-    const bimkonEyes = this.bimkonEyes;
-    const address = this.address;
+  private get fetchMaxSupply() {
+    const bimkonEyes = this.getBimkonEyes();
 
     return flow(function* () {
-      if (address) {
-        const proof: Array<string> = yield getAirdropProof(address);
-        const whitelisted: boolean = yield bimkonEyes.canClaimAirDrop(proof, address);
+      const bigNumber: BigNumber = yield bimkonEyes.MAX_AIRDROP_MINT();
 
-        return whitelisted;
-      }
-
-      return false;
+      return bigNumber.toNumber();
     });
   }
 
-  private get allowedToClaimSupply() {
-    const bimkonEyes = this.bimkonEyes;
-    const address = this.address;
+  private get fetchAllowedAmount() {
+    const bimkonEyes = this.getBimkonEyes();
+    const address = this.getAddress();
 
     return flow(function* () {
       if (address) {
@@ -149,15 +157,33 @@ export class ClaimAirdrop {
     });
   }
 
+  private get fetchWhitelisted() {
+    const bimkonEyes = this.getBimkonEyes();
+    const address = this.getAddress();
+
+    return flow(function* () {
+      if (address) {
+        const proof: Array<string> = yield getAirdropProof(address);
+        const whitelisted: boolean = yield bimkonEyes.canClaimAirDrop(proof, address);
+
+        return whitelisted;
+      }
+
+      return null;
+    });
+  }
+
   private readonly runStateChangeListener = () => {
-    const handleStateChange = (state: SaleState) => this.phaseAutoFetchable.forceUpdate(stateToPhase(state));
+    const bimkonEyes = this.getBimkonEyes();
+
+    const handleStateChange = (state: SaleState) => this.phase.forceUpdate(stateToPhase(state));
 
     onBecomeObserved(this, 'phase', () => {
-      if (this.bimkonEyes.signer) this.bimkonEyes.on('SetAirDropState', handleStateChange);
+      if (bimkonEyes.signer) bimkonEyes.on('SetAirDropState', handleStateChange);
     });
 
     onBecomeUnobserved(this, 'phase', () => {
-      if (this.bimkonEyes.signer) this.bimkonEyes.off('SetAirDropState', handleStateChange);
+      if (bimkonEyes.signer) bimkonEyes.off('SetAirDropState', handleStateChange);
     });
   };
 }

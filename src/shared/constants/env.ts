@@ -1,6 +1,9 @@
 export const ENV = {
   BASE_URL: process.env.BASE_URL as string,
   PREFERRED_CHAIN_ID: Number(process.env.PREFERRED_CHAIN_ID),
+  PREFERRED_CHAIN_NAME: process.env.PREFERRED_CHAIN_NAME as string,
+  ETH_FRACTION: Number(process.env.ETH_FRACTION),
+  USD_FRACTION: Number(process.env.USD_FRACTION),
   ALCHEMY_API_KEY: process.env.ALCHEMY_API_KEY as string,
   BIMKON_EYES_ADDRESS: process.env.BIMKON_EYES_ADDRESS as string,
   SIGNATURE_CHECKER_ADDRESS: process.env.SIGNATURE_CHECKER_ADDRESS as string,

@@ -4,7 +4,7 @@ import { arrayify } from 'ethers/lib/utils';
 
 import { getEthRateInUsd } from 'api/controllers/eth';
 
-import { BimkonEyes, SignatureChecker } from 'contracts/index';
+import { BimkonEyes } from 'contracts/index';
 
 import { autoFetchable } from 'services/AutoFetchable';
 import { fetchError, fetchLoading, fetchNothing, fetchSucceed } from 'services/AutoFetchable/utils';
@@ -18,75 +18,89 @@ import { TransactionStatus } from 'shared/types/transactionStatus';
 export class PublicMint {
   public mintStatus = fetchNothing<TransactionStatus>();
 
-  public amountToMint = 1;
+  public amount = 1;
 
-  public get isFetched() {
-    return this.allowedToMintAutoFetchable.isFetched && this.phaseAutoFetchable.isFetched;
+  public readonly price = autoFetchable({
+    fetch: () => this.fetchPrice,
+  });
+
+  public readonly phase = autoFetchable({
+    fetch: () => this.fetchPhase,
+  });
+
+  public readonly allowedAmount = autoFetchable({
+    fetch: () => this.fetchAllowedAmount,
+    deps: () => this.isConfirmed,
+  });
+
+  public readonly totalSupply = autoFetchable({
+    fetch: () => this.fetchTotalSupply,
+    deps: () => this.isConfirmed,
+  });
+
+  public readonly maxSupply = autoFetchable({
+    fetch: () => this.fetchMaxSupply,
+  });
+
+  public get totalCost() {
+    return this.price.value && this.price.value.mul(this.amount);
+  }
+
+  public get isPending() {
+    return this.mintStatus.value === 'pending';
+  }
+
+  public get isConfirmed() {
+    return this.mintStatus.value === 'confirmed';
   }
 
   public get isSoon() {
-    return this.phase.value === 'soon';
+    const { value: phase, isFetched } = this.phase;
+
+    return isFetched && phase === 'soon';
   }
 
-  public get isAllMinted() {
-    return this.phase.value === 'available' && this.allowedToMint.value === 0;
-  }
+  public get isMinted() {
+    const { value: phase, isFetched: phaseIsFetched } = this.phase;
+    const { value: allowedAmount, isFetched: allowedAmountIsFetched } = this.allowedAmount;
 
-  public get isFinished() {
-    return this.phase.value === 'finished' && !this.isAllMinted;
+    return phaseIsFetched && allowedAmountIsFetched && phase === 'available' && allowedAmount === 0;
   }
 
   public get isAvailable() {
-    return this.phase.value === 'available' && !this.isAllMinted;
+    const { value: phase, isFetched } = this.phase;
+
+    return isFetched && phase === 'available' && !this.isMinted;
   }
 
-  public get price() {
-    return this.priceAutoFetchable.data;
+  public get isFinished() {
+    const { value: phase, isFetched } = this.phase;
+
+    return isFetched && phase === 'finished';
   }
 
-  public get totalCost() {
-    return this.price.value && this.price.value.mul(this.amountToMint);
-  }
-
-  public get phase() {
-    return this.phaseAutoFetchable.data;
-  }
-
-  public get allowedToMint() {
-    return this.allowedToMintAutoFetchable.data;
-  }
-
-  public get totalSupply() {
-    return this.totalSupplyAutoFetchable.data;
-  }
-
-  public get maxSupply() {
-    return this.maxSupplyAutoFetchable.data;
-  }
-
-  public readonly setAmountToMint = (x: number) => {
-    if (x >= 1 && x <= (this.allowedToMint.value || 1)) {
+  public readonly setAmount = (x: number) => {
+    if (x >= 1 && x <= (this.allowedAmount.value || 1)) {
       runInAction(() => {
-        this.amountToMint = x;
+        this.amount = x;
       });
     }
   };
 
   public readonly mint = async () => {
-    const address = this.address;
-    const bimkonEyes = this.bimkonEyes;
-    const signatureChecker = this.signatureChecker;
+    const address = this.getAddress();
+    const bimkonEyes = this.getBimkonEyes();
 
     this.mintStatus = fetchLoading<TransactionStatus>(this.mintStatus.value);
 
     if (address) {
       try {
         const price = await bimkonEyes.publicSalePrice();
-        const cat = await signatureChecker.CAT();
+        const cat = await bimkonEyes.CAT();
         const signature = await bimkonEyes.signer.signMessage(arrayify(cat));
 
-        const transaction = await bimkonEyes.mint(this.amountToMint, signature, {
-          value: price.mul(this.amountToMint),
+        const transaction = await bimkonEyes.mint(this.amount, signature, {
+          value: price.mul(this.amount),
         });
 
         runInAction(() => {
@@ -95,7 +109,7 @@ export class PublicMint {
 
         await transaction.wait();
 
-        this.setAmountToMint(1);
+        this.setAmount(1);
 
         runInAction(() => {
           this.mintStatus = fetchSucceed('confirmed');
@@ -109,38 +123,15 @@ export class PublicMint {
   };
 
   constructor(
-    private readonly bimkonEyes: BimkonEyes,
-    private readonly signatureChecker: SignatureChecker,
-    private readonly address?: string,
+    private readonly getBimkonEyes: () => BimkonEyes,
+    private readonly getAddress: () => string | undefined,
   ) {
     makeAutoObservable(this);
     this.runStateChangeListener();
   }
 
-  private readonly priceAutoFetchable = autoFetchable({
-    fetch: () => this.fetchPrice,
-  });
-
-  private readonly phaseAutoFetchable = autoFetchable({
-    fetch: () => this.fetchPhase,
-  });
-
-  private readonly allowedToMintAutoFetchable = autoFetchable({
-    fetch: () => this.fetchAllowedToMint,
-    deps: () => this.mintStatus.value === 'confirmed',
-  });
-
-  private readonly totalSupplyAutoFetchable = autoFetchable({
-    fetch: () => this.fetchTotalSupply,
-    deps: () => this.mintStatus.value === 'confirmed',
-  });
-
-  private readonly maxSupplyAutoFetchable = autoFetchable({
-    fetch: () => this.fetchMaxSupply,
-  });
-
   private get fetchPrice() {
-    const bimkonEyes = this.bimkonEyes;
+    const bimkonEyes = this.getBimkonEyes();
 
     return flow(function* () {
       const bigNumber: BigNumber = yield bimkonEyes.publicSalePrice();
@@ -152,7 +143,7 @@ export class PublicMint {
   }
 
   private get fetchPhase() {
-    const bimkonEyes = this.bimkonEyes;
+    const bimkonEyes = this.getBimkonEyes();
 
     return flow(function* () {
       const state: SaleState = yield bimkonEyes.publicSale();
@@ -162,8 +153,8 @@ export class PublicMint {
   }
 
   private get fetchTotalSupply() {
-    const bimkonEyes = this.bimkonEyes;
-    const address = this.address;
+    const bimkonEyes = this.getBimkonEyes();
+    const address = this.getAddress();
 
     return flow(function* () {
       if (address) {
@@ -176,9 +167,9 @@ export class PublicMint {
     });
   }
 
-  private get fetchAllowedToMint() {
-    const bimkonEyes = this.bimkonEyes;
-    const address = this.address;
+  private get fetchAllowedAmount() {
+    const bimkonEyes = this.getBimkonEyes();
+    const address = this.getAddress();
 
     return flow(function* () {
       if (address) {
@@ -192,8 +183,8 @@ export class PublicMint {
   }
 
   private get fetchMaxSupply() {
-    const bimkonEyes = this.bimkonEyes;
-    const address = this.address;
+    const bimkonEyes = this.getBimkonEyes();
+    const address = this.getAddress();
 
     return flow(function* () {
       if (address) {
@@ -207,14 +198,16 @@ export class PublicMint {
   }
 
   private readonly runStateChangeListener = () => {
-    const handleStateChange = (state: SaleState) => this.phaseAutoFetchable.forceUpdate(stateToPhase(state));
+    const bimkonEyes = this.getBimkonEyes();
+
+    const handleStateChange = (state: SaleState) => this.phase.forceUpdate(stateToPhase(state));
 
     onBecomeObserved(this, 'phase', () => {
-      if (this.bimkonEyes.signer) this.bimkonEyes.on('SetPublicSaleState', handleStateChange);
+      if (bimkonEyes.signer) bimkonEyes.on('SetPublicSaleState', handleStateChange);
     });
 
     onBecomeUnobserved(this, 'phase', () => {
-      if (this.bimkonEyes.signer) this.bimkonEyes.off('SetPublicSaleState', handleStateChange);
+      if (bimkonEyes.signer) bimkonEyes.off('SetPublicSaleState', handleStateChange);
     });
   };
 }
