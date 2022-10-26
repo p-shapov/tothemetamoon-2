@@ -55,9 +55,9 @@ export class PublicMint {
   }
 
   public get isSoon() {
-    const { value: phase, isFetched } = this.phase;
+    const { value: phase, isFetched: phaseIsFetched } = this.phase;
 
-    return isFetched && phase === 'soon';
+    return phaseIsFetched && phase === 'soon';
   }
 
   public get isMinted() {
@@ -68,15 +68,16 @@ export class PublicMint {
   }
 
   public get isAvailable() {
-    const { value: phase, isFetched } = this.phase;
+    const { value: phase, isFetched: phaseIsFetched } = this.phase;
+    const { isFetched: allowedAmountIsFetched } = this.allowedAmount;
 
-    return isFetched && phase === 'available' && !this.isMinted;
+    return phaseIsFetched && phase === 'available' && allowedAmountIsFetched && !this.isMinted;
   }
 
   public get isFinished() {
-    const { value: phase, isFetched } = this.phase;
+    const { value: phase, isFetched: phaseIsFetched } = this.phase;
 
-    return isFetched && phase === 'finished';
+    return phaseIsFetched && phase === 'finished';
   }
 
   public readonly setAmount = (x: number) => {

@@ -43,21 +43,21 @@ export class ClaimAirdrop {
   }
 
   public get isWhitelisted() {
-    const { value: whitelisted, isFetched } = this.whitelisted;
+    const { value: whitelisted, isFetched: whitelistedIsFetched } = this.whitelisted;
 
-    return isFetched && !!whitelisted;
+    return whitelistedIsFetched && !!whitelisted;
   }
 
   public get isNotWhitelisted() {
-    const { value: whitelisted, isFetched } = this.whitelisted;
+    const { value: whitelisted, isFetched: whitelistedIsFetched } = this.whitelisted;
 
-    return isFetched && !whitelisted && !this.isFinished;
+    return whitelistedIsFetched && !whitelisted && !this.isFinished;
   }
 
   public get isSoon() {
-    const { value: phase, isFetched } = this.phase;
+    const { value: phase, isFetched: phaseIsFetched } = this.phase;
 
-    return isFetched && phase === 'soon' && this.isWhitelisted;
+    return phaseIsFetched && phase === 'soon' && this.isWhitelisted;
   }
 
   public get isMinted() {
@@ -74,15 +74,22 @@ export class ClaimAirdrop {
   }
 
   public get isAvailable() {
-    const { value: phase, isFetched } = this.phase;
+    const { value: phase, isFetched: phaseIsFetched } = this.phase;
+    const { isFetched: allowedAmountIsFetched } = this.allowedAmount;
 
-    return isFetched && phase === 'available' && this.isWhitelisted && !this.isMinted;
+    return (
+      phaseIsFetched &&
+      allowedAmountIsFetched &&
+      phase === 'available' &&
+      this.isWhitelisted &&
+      !this.isMinted
+    );
   }
 
   public get isFinished() {
-    const { value: phase, isFetched } = this.phase;
+    const { value: phase, isFetched: phaseIsFetched } = this.phase;
 
-    return isFetched && phase === 'finished';
+    return phaseIsFetched && phase === 'finished';
   }
 
   public readonly mint = async () => {

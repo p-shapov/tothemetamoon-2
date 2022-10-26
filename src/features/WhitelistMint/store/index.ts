@@ -69,9 +69,9 @@ export class WhitelistMint {
   }
 
   public get isSoon() {
-    const { value: phase, isFetched } = this.phase;
+    const { value: phase, isFetched: phaseIsFetched } = this.phase;
 
-    return isFetched && phase === 'soon' && this.isWhitelisted;
+    return phaseIsFetched && phase === 'soon' && this.isWhitelisted;
   }
 
   public get isMinted() {
@@ -88,15 +88,22 @@ export class WhitelistMint {
   }
 
   public get isFinished() {
-    const { value: phase, isFetched } = this.phase;
+    const { value: phase, isFetched: phaseIsFetched } = this.phase;
 
-    return isFetched && phase === 'finished';
+    return phaseIsFetched && phase === 'finished';
   }
 
   public get isAvailable() {
-    const { value: phase, isFetched } = this.phase;
+    const { value: phase, isFetched: phaseIsFetched } = this.phase;
+    const { isFetched: allowedAmountIsFetched } = this.allowedAmount;
 
-    return isFetched && phase === 'available' && this.isWhitelisted && !this.isMinted;
+    return (
+      phaseIsFetched &&
+      phase === 'available' &&
+      allowedAmountIsFetched &&
+      this.isWhitelisted &&
+      !this.isMinted
+    );
   }
 
   public get totalCost() {
