@@ -7,6 +7,7 @@ import { useClaimAirdrop } from 'features/ClaimAirdrop/hooks/useClaimAirdrop';
 
 import { Page } from 'shared/types/page';
 import { ClientOnly } from 'shared/components/ClientOnly';
+import { Switch } from 'shared/components/Switch';
 
 import styles from './Airdrop.module.scss';
 import { Available } from './Available';
@@ -21,11 +22,16 @@ export const Airdrop: Page = observer(() => {
   return (
     <div className={styles['root']}>
       <ClientOnly>
-        {isAvailable && <Available />}
-        {isNotWhitelisted && <NotWhitelisted />}
-        {isSoon && <Soon />}
-        {isFinished && <Finished />}
-        {isMinted && <Minted />}
+        <Switch
+          value={true}
+          cases={[
+            { guard: isAvailable, el: <Available /> },
+            { guard: isNotWhitelisted, el: <NotWhitelisted /> },
+            { guard: isSoon, el: <Soon /> },
+            { guard: isFinished, el: <Finished /> },
+            { guard: isMinted, el: <Minted /> },
+          ]}
+        />
       </ClientOnly>
     </div>
   );

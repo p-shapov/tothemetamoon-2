@@ -7,6 +7,7 @@ import { usePublicMint } from 'features/PublicMint/hooks/usePublicMint';
 
 import { Page } from 'shared/types/page';
 import { ClientOnly } from 'shared/components/ClientOnly';
+import { Switch } from 'shared/components/Switch';
 
 import styles from './Sale.module.scss';
 import { Soon } from './Soon';
@@ -20,12 +21,15 @@ export const Sale: Page = observer(() => {
   return (
     <div className={styles['root']}>
       <ClientOnly>
-        <>
-          {isAvailable && <Available />}
-          {isFinished && <Finished />}
-          {isMinted && <Minted />}
-          {isSoon && <Soon />}
-        </>
+        <Switch
+          value={true}
+          cases={[
+            { guard: isAvailable, el: <Available /> },
+            { guard: isFinished, el: <Finished /> },
+            { guard: isMinted, el: <Minted /> },
+            { guard: isSoon, el: <Soon /> },
+          ]}
+        />
       </ClientOnly>
     </div>
   );

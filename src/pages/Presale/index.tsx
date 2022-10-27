@@ -7,6 +7,7 @@ import { useWhitelistMint } from 'features/WhitelistMint/hooks/useWhitelistMint'
 
 import { Page } from 'shared/types/page';
 import { ClientOnly } from 'shared/components/ClientOnly';
+import { Switch } from 'shared/components/Switch';
 
 import styles from './Presale.module.scss';
 import { Available } from './Available';
@@ -21,11 +22,16 @@ export const Presale: Page = observer(() => {
   return (
     <div className={styles['root']}>
       <ClientOnly>
-        {isAvailable && <Available />}
-        {isNotWhitelisted && <NotWhitelisted />}
-        {isFinished && <Finished />}
-        {isMinted && <Minted />}
-        {isSoon && <Soon />}
+        <Switch
+          value={true}
+          cases={[
+            { guard: isAvailable, el: <Available /> },
+            { guard: isNotWhitelisted, el: <NotWhitelisted /> },
+            { guard: isFinished, el: <Finished /> },
+            { guard: isMinted, el: <Minted /> },
+            { guard: isSoon, el: <Soon /> },
+          ]}
+        />
       </ClientOnly>
     </div>
   );
